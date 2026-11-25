@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import dados from '../data/indicadores.json';
 ---
 <Base titulo="Sobre" ativo="sobre">
+  <img src={import.meta.env.BASE_URL.replace(/\/$/, "") + "/logo-recomecar-escura.png"} alt="Re.Começar" width="200" height="36" style="display:block;margin-bottom:10px" />
   <h1>Sobre esta base</h1>
   <p class="sub">Texto da aba <code>LEIA-ME</code> da planilha original e instruções de uso do painel.</p>
   <div class="card">

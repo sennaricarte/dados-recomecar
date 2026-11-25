@@ -35,12 +35,12 @@ import Base from '../layouts/Base.astro';
 
     Chart.register(BarController, BarElement, LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend);
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
-    Chart.defaults.color = '#5b6573';
-    Chart.defaults.borderColor = '#e8ebf0';
+    Chart.defaults.color = '#6a686b';
+    Chart.defaults.borderColor = '#ece9e6';
 
     // Paleta categórica em ordem fixa; a cor segue a entidade, nunca o ranking
-    const COR = { azul: '#257de0', laranja: '#f47230', aqua: '#00b894', amarelo: '#f2a600', magenta: '#ee7fac', violeta: '#6a4ce2' };
-    const ORDINAL = ['#84b9f3', '#519ced', '#2370cd', '#0e3d7e']; // funil: azul claro→escuro
+    const COR = { vinho: '#782932', amarelo: '#ffca00', grafite: '#3f3e40', verde: '#00b894' };
+    const ORDINAL = ['#d4a5ac', '#b5707a', '#97424f', '#782932']; // funil: tons de vinho, claro→escuro
 
     const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
     const selP = $<HTMLSelectElement>('f-periodo'), selDe = $<HTMLSelectElement>('f-de'), selAte = $<HTMLSelectElement>('f-ate'), chkP = $<HTMLInputElement>('f-parcial');
@@ -60,7 +60,7 @@ import Base from '../layouts/Base.astro';
     }
 
     const linhaStyle = (cor: string) => ({ borderColor: cor, backgroundColor: cor, borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, pointBorderColor: '#fff', pointBorderWidth: 2, tension: 0, spanGaps: false });
-    const barStyle = (cor: string) => ({ backgroundColor: cor, borderRadius: 4, borderSkipped: 'bottom', maxBarThickness: 34 });
+    const barStyle = (cor: string) => ({ backgroundColor: cor, borderColor: '#fff', borderWidth: 1.5, borderRadius: 4, borderSkipped: 'bottom', maxBarThickness: 34 });
 
     function render() {
       const d = getDados(), c = getCalc();
@@ -91,11 +91,11 @@ import Base from '../layouts/Base.astro';
       }).join('');
 
       const porAno = { onClick: (_e: any, els: any[]) => { if (els.length) selP.value = String(idx[els[0].index]); render(); } };
-      const yInt = { beginAtZero: true, ticks: { callback: (v: any) => compacto(Number(v)) }, grid: { color: '#eef0f4' } };
+      const yInt = { beginAtZero: true, ticks: { callback: (v: any) => compacto(Number(v)) }, grid: { color: '#efece9' } };
       const tip = (u: string) => ({ tooltip: { callbacks: { label: (ctx: any) => ` ${ctx.dataset.label}: ${formatar(ctx.parsed.y ?? ctx.parsed.x, u)}` } } });
 
       montar('g-trilha', { type: 'bar', data: { labels, datasets: [
-        { label: 'Cadastrados', data: S('ENT-01'), ...barStyle(COR.azul) }, { label: 'Socializados', data: S('ENT-02'), ...barStyle(COR.laranja) }, { label: 'Desenvolvidos', data: S('ENT-03'), ...barStyle(COR.aqua) }] },
+        { label: 'Cadastrados', data: S('ENT-01'), ...barStyle(COR.vinho) }, { label: 'Socializados', data: S('ENT-02'), ...barStyle(COR.amarelo) }, { label: 'Desenvolvidos', data: S('ENT-03'), ...barStyle(COR.grafite) }] },
         options: { ...porAno, scales: { y: yInt }, plugins: tip('pessoas') } });
 
       // ---- funil
@@ -106,34 +106,34 @@ import Base from '../layouts/Base.astro';
           const i = ctx.dataIndex, v = fun[i][1], p = i ? fun[i - 1][1] : null;
           return ` ${formatar(v, 'pessoas')} pessoas${p && v !== null ? ` (${((v / p) * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% da etapa anterior)` : ''}`; } } } } } });
 
-      montar('g-qualif', { type: 'bar', data: { labels, datasets: [{ label: 'Matriculados', data: S('ENT-05'), ...barStyle(COR.azul) }, { label: 'Concluídas', data: S('ENT-06'), ...barStyle(COR.laranja) }] },
+      montar('g-qualif', { type: 'bar', data: { labels, datasets: [{ label: 'Matriculados', data: S('ENT-05'), ...barStyle(COR.vinho) }, { label: 'Concluídas', data: S('ENT-06'), ...barStyle(COR.amarelo) }] },
         options: { ...porAno, scales: { y: yInt }, plugins: tip('pessoas') } });
 
       montar('g-renda', { type: 'bar', data: { labels, datasets: [
-        { label: 'CLT', data: L('C01'), ...barStyle(COR.azul), borderRadius: 0 }, { label: 'PJ/MEI/cooperado', data: L('C02'), ...barStyle(COR.laranja), borderRadius: 0 }, { label: 'Empreendedores', data: L('C03'), ...barStyle(COR.aqua), borderRadius: 0 }] },
+        { label: 'CLT', data: L('C01'), ...barStyle(COR.vinho), borderRadius: 0 }, { label: 'PJ/MEI/cooperado', data: L('C02'), ...barStyle(COR.amarelo), borderRadius: 0 }, { label: 'Empreendedores', data: L('C03'), ...barStyle(COR.grafite), borderRadius: 0 }] },
         options: { ...porAno, scales: { x: { stacked: true }, y: { ...yInt, stacked: true } }, plugins: tip('pessoas') } });
 
-      montar('g-taxa', { type: 'line', data: { labels, datasets: [{ label: 'Taxa de empregabilidade', data: S('RES-02'), ...linhaStyle(COR.azul) }] },
-        options: { ...porAno, scales: { y: { beginAtZero: true, ticks: { callback: (v: any) => `${Number(v) * 100}%` }, grid: { color: '#eef0f4' } } }, plugins: { legend: { display: false }, ...tip('%') } } });
+      montar('g-taxa', { type: 'line', data: { labels, datasets: [{ label: 'Taxa de empregabilidade', data: S('RES-02'), ...linhaStyle(COR.vinho) }] },
+        options: { ...porAno, scales: { y: { beginAtZero: true, ticks: { callback: (v: any) => `${Number(v) * 100}%` }, grid: { color: '#efece9' } } }, plugins: { legend: { display: false }, ...tip('%') } } });
 
       montar('g-outros', { type: 'bar', data: { labels, datasets: [
-        { label: 'Reeducandos', data: L('A04'), ...barStyle(COR.azul), borderRadius: 0 }, { label: 'Familiares', data: L('A05'), ...barStyle(COR.laranja), borderRadius: 0 },
-        { label: 'Jovens em risco', data: L('A06'), ...barStyle(COR.aqua), borderRadius: 0 }, { label: 'Líderes formados', data: L('A07'), ...barStyle(COR.amarelo), borderRadius: 0 }] },
+        { label: 'Reeducandos', data: L('A04'), ...barStyle(COR.vinho), borderRadius: 0 }, { label: 'Familiares', data: L('A05'), ...barStyle(COR.amarelo), borderRadius: 0 },
+        { label: 'Jovens em risco', data: L('A06'), ...barStyle(COR.grafite), borderRadius: 0 }, { label: 'Líderes formados', data: L('A07'), ...barStyle(COR.verde), borderRadius: 0 }] },
         options: { ...porAno, scales: { x: { stacked: true }, y: { ...yInt, stacked: true } }, plugins: tip('pessoas') } });
 
       montar('g-perfil', { type: 'line', data: { labels, datasets: [
-        { label: 'Homens', data: L('G01'), ...linhaStyle(COR.azul) }, { label: 'Pretos e pardos', data: L('G02'), ...linhaStyle(COR.laranja) }, { label: 'Fund. incompleto', data: L('G03'), ...linhaStyle(COR.aqua) }] },
-        options: { ...porAno, scales: { y: { min: 0, max: 1, ticks: { callback: (v: any) => `${Math.round(Number(v) * 100)}%` }, grid: { color: '#eef0f4' } } }, plugins: tip('%') } });
+        { label: 'Homens', data: L('G01'), ...linhaStyle(COR.vinho) }, { label: 'Pretos e pardos', data: L('G02'), ...linhaStyle(COR.amarelo) }, { label: 'Fund. incompleto', data: L('G03'), ...linhaStyle(COR.grafite) }] },
+        options: { ...porAno, scales: { y: { min: 0, max: 1, ticks: { callback: (v: any) => `${Math.round(Number(v) * 100)}%` }, grid: { color: '#efece9' } } }, plugins: tip('%') } });
 
-      montar('g-empresas', { type: 'line', data: { labels, datasets: [{ label: 'Empresas parceiras', data: L('F02'), ...linhaStyle(COR.azul) }, { label: 'Empresas que contrataram', data: L('C06'), ...linhaStyle(COR.laranja) }] },
+      montar('g-empresas', { type: 'line', data: { labels, datasets: [{ label: 'Empresas parceiras', data: L('F02'), ...linhaStyle(COR.vinho) }, { label: 'Empresas que contrataram', data: L('C06'), ...linhaStyle(COR.amarelo) }] },
         options: { ...porAno, scales: { y: yInt }, plugins: tip('nº') } });
 
       // ---- reincidência
       const nac = param(d, 'taxaNacional'), rec = param(d, 'reincidenciaRecomecar'), calc = c.ind['IMP-01'][7];
-      const barras: [string, number | null, string][] = [['Nacional (CNJ, 4–5 anos)', nac, '#6b7380'], ['Recomeçar — divulgada (até 12 meses)', rec, COR.azul], ['Recomeçar — calculada pela base (D02 ÷ D01)', calc, COR.laranja]];
+      const barras: [string, number | null, string][] = [['Nacional (CNJ, 4–5 anos)', nac, COR.grafite], ['Recomeçar — divulgada (até 12 meses)', rec, COR.vinho], ['Recomeçar — calculada pela base (D02 ÷ D01)', calc, COR.amarelo]];
       $('n-reinc').textContent = `Diferença para a taxa nacional: ${calc !== null && nac !== null ? formatar(nac - calc, 'p.p.') : '—'} (base: ${formatar(c.lev['D01'][7], 'pessoas')} egressos acompanhados, ${formatar(c.lev['D02'][7], 'pessoas')} reincidentes)`;
       montar('g-reinc', { type: 'bar', data: { labels: barras.map((b) => b[0]), datasets: [{ label: 'Taxa de reincidência', data: barras.map((b) => b[1]), backgroundColor: barras.map((b) => b[2]), borderRadius: 4, borderSkipped: 'start', maxBarThickness: 34 }] },
-        options: { indexAxis: 'y', scales: { x: { beginAtZero: true, ticks: { callback: (v: any) => `${Number(v) * 100}%` }, grid: { color: '#eef0f4' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, ...tip('%') } } });
+        options: { indexAxis: 'y', scales: { x: { beginAtZero: true, ticks: { callback: (v: any) => `${Number(v) * 100}%` }, grid: { color: '#efece9' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, ...tip('%') } } });
     }
 
     [selP, selDe, selAte, chkP].forEach((e) => e.addEventListener('input', render));

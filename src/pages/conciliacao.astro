@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base titulo="Conciliação" ativo="conciliacao">
+  <h1>Conciliação com os números hoje publicados</h1>
+  <p class="sub">Compara o que a base calcula com o que aparece na Narrativa / One Pager e nas instruções do projeto (aba <code>4_Conciliacao</code>). Registre o <b>valor oficial</b> e quem decidiu.</p>
+  <div class="tabela-wrap"><table id="tab"></table></div>
+  <script>
+    import { getDados, getCalc, onChange } from '../lib/store';
+    import { valorConciliacao, valorRef } from '../lib/calc';
+    import { vincular } from '../lib/ui';
+    import { esc, formatar } from '../lib/format';
+    const d = getDados();
+    const unidade = (i: number) => {
+      const r = d.conciliacao[i].calculado;
+      if (r.tipo === 'param') return '%';
+      return (r.tipo === 'ind' ? d.indicadores.find((x) => x.codigo === r.ref)?.unidade : d.levantamento.find((x) => x.id === r.ref)?.unidade) ?? '';
+    };
+    const tab = document.getElementById('tab')!;
+    tab.innerHTML = `<thead><tr><th>#</th><th>Número divulgado</th><th class="n">Narrativa / One Pager</th><th class="n">Instruções</th><th class="n">Calculado pela base</th><th class="n">Dif. Narrativa</th><th class="n">Dif. Instruções</th>
+      <th>Valor oficial</th><th>Decisão (quem/quando)</th><th>Observação</th></tr></thead><tbody>${d.conciliacao
+      .map((c, i) => `<tr data-i="${i}"><td class="col-id">${c.n}</td><td style="min-width:240px">${esc(c.numero)}</td>
+        <td class="n" data-c="n"></td><td class="n" data-c="i"></td><td class="n calc" data-c="calc"></td><td class="n" data-c="dn"></td><td class="n" data-c="di"></td>
+        <td class="n"><input data-num data-key="c:${c.n}:oficial" data-unidade="${esc(unidade(i))}" data-col="of" inputmode="decimal"></td>
+        <td><input class="txt" type="text" data-key="c:${c.n}:decisao" data-col="de"></td>
+        <td><input class="txt largo" type="text" data-key="c:${c.n}:obs" data-col="ob"></td></tr>`).join('')}</tbody>`;
+    vincular(tab);
+    function render() {
+      const dd = getDados(), cc = getCalc();
+      tab.querySelectorAll<HTMLElement>('tbody tr').forEach((tr) => {
+        const i = Number(tr.dataset.i), c = dd.conciliacao[i], u = unidade(i);
+        const n = valorRef(dd, c.narrativa), ins = valorRef(dd, c.instrucoes), calc = valorConciliacao(dd, cc, c.calculado);
+        const du = u === '%' ? 'p.p.' : u;
+        const set = (k: string, t: string) => (tr.querySelector(`[data-c=${k}]`)!.textContent = t);
+        set('n', formatar(n, u)); set('i', formatar(ins, u)); set('calc', formatar(calc, u));
+        set('dn', n !== null && calc !== null ? formatar(calc - n, du) : '—');
+        set('di', ins !== null && calc !== null ? formatar(calc - ins, du) : '—');
+      });
+    }
+    onChange(render);
+    render();
+  </script>
+</Base>

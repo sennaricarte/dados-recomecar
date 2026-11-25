@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base titulo="Base única" ativo="base">
+  <h1>Base única para uso institucional</h1>
+  <p class="sub">Uma linha por indicador (aba <code>3_Base_Unica</code>). Valores vêm do cálculo; edite responsável, status de validação, data e onde cada número pode ser usado. <b>Use só indicadores “Validado”</b> em site, relatório e propostas.</p>
+  <div class="filtros">
+    <label>Status <select id="f-status"><option value="">Todos</option></select></label>
+    <label>Tipo <select id="f-tipo"><option value="">Todos</option><option>Entrega</option><option>Resultado</option><option>Impacto</option></select></label>
+    <div id="resumo" class="muted" style="padding-bottom:6px"></div>
+  </div>
+  <div class="tabela-wrap"><table id="tab"></table></div>
+  <script>
+    import { getDados, getCalc, onChange } from '../lib/store';
+    import { vincular } from '../lib/ui';
+    import { esc, formatar } from '../lib/format';
+    const d = getDados();
+    const tab = document.getElementById('tab')!;
+    const fS = document.getElementById('f-status') as HTMLSelectElement;
+    const fT = document.getElementById('f-tipo') as HTMLSelectElement;
+    d.listas.statusValidacao.forEach((s) => fS.add(new Option(s, s)));
+    const opts = (l: string[]) => `<option value=""></option>` + l.map((s) => `<option>${esc(s)}</option>`).join('');
+    const usos = ['site', 'relatorio', 'isps', 'governo'];
+    tab.innerHTML = `<thead><tr><th class="col-id">Código</th><th>Indicador</th><th class="n">Acumulado</th><th class="n">Último ano</th><th class="n">Valor no último ano</th>
+      <th>Responsável</th><th>Validação</th><th>Atualizado em</th><th>Site</th><th>Relatório</th><th>ISPs</th><th>Governo</th></tr></thead><tbody>${d.base
+      .map((b) => {
+        const m = d.indicadores.find((x) => x.codigo === b.codigo)!;
+        return `<tr data-cod="${b.codigo}"><td class="col-id">${b.codigo}</td><td style="min-width:260px" title="${esc(m.como)}">${esc(m.nome)}<div class="muted" style="font-size:11px">${m.tipo} · ODS ${esc(m.ods)}</div></td>
+          <td class="n calc" data-c="acum"></td><td class="n calc" data-c="ano"></td><td class="n calc" data-c="ult"></td>
+          <td><input class="txt" type="text" data-key="b:${b.codigo}:responsavel" data-col="r"></td>
+          <td><select data-key="b:${b.codigo}:status" data-col="s">${d.listas.statusValidacao.map((s) => `<option>${esc(s)}</option>`).join('')}</select></td>
+          <td><input type="date" data-key="b:${b.codigo}:atualizacao" data-col="a"></td>
+          ${usos.map((u) => `<td><select data-key="b:${b.codigo}:uso:${u}" data-col="${u}">${opts(d.listas.uso)}</select></td>`).join('')}</tr>`;
+      })
+      .join('')}</tbody>`;
+    vincular(tab);
+
+    function calcular() {
+      const dd = getDados(), c = getCalc();
+      let ok = 0;
+      tab.querySelectorAll<HTMLElement>('tbody tr').forEach((tr) => {
+        const cod = tr.dataset.cod!;
+        const m = dd.indicadores.find((x) => x.codigo === cod)!;
+        const s = c.ind[cod];
+        // como na planilha: "último ano com dado" olha só 2021…2026 (exclui "Até 2020")
+        let ult = -1;
+        for (let i = 1; i <= 6; i++) if (s[i] !== null) ult = i;
+        tr.querySelector('[data-c=acum]')!.textContent = formatar(s[7], m.unidade);
+        tr.querySelector('[data-c=ano]')!.textContent = ult > 0 ? dd.meta.anos[ult] : '—';
+        tr.querySelector('[data-c=ult]')!.textContent = ult > 0 ? formatar(s[ult], m.unidade) : '—';
+        const st = dd.base.find((x) => x.codigo === cod)!.status;
+        tr.hidden = !!((fS.value && st !== fS.value) || (fT.value && m.tipo !== fT.value));
+        if (st === 'Validado') ok++;
+      });
+      document.getElementById('resumo')!.textContent = `${ok} de ${dd.base.length} indicadores validados`;
+    }
+    [fS, fT].forEach((e) => e.addEventListener('input', calcular));
+    onChange(calcular);
+    calcular();
+  </script>
+</Base>

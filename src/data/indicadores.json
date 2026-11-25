@@ -1,0 +1,1773 @@
+{
+ "meta": {
+  "titulo": "Indicadores do Instituto Recomeçar",
+  "anos": [
+   "Até 2020",
+   "2021",
+   "2022",
+   "2023",
+   "2024",
+   "2025",
+   "2026"
+  ],
+  "parcial": "2026",
+  "geradoDe": "d3b3fda5-Base_Indicadores_Recomecar.xlsx"
+ },
+ "leiaMe": [
+  {
+   "titulo": "Para que serve",
+   "texto": "Reunir os dados operacionais e o histórico, calcular os indicadores do novo mapa de KPIs sociais (Entregas, Resultados, Impactos, ligados às ODS 4, 8 e 16) e formar uma base única para site, relatório de atividades, apresentações a ISPs e propostas ao governo."
+  },
+  {
+   "titulo": "Como preencher",
+   "texto": "1) Parametros: confirme os valores e preencha os que estão com [PREENCHER].  2) 1_Levantamento: digite os números brutos por ano e registre fonte, responsável e status.  3) 2_Indicadores: confira os cálculos (nada a digitar).  4) 3_Base_Unica: defina responsável, status de validação e onde cada indicador pode ser usado.  5) 4_Conciliacao: compare com os números publicados e registre o valor oficial."
+  },
+  {
+   "titulo": "Legenda",
+   "texto": "Amarelo com texto azul = você preenche.  Cinza = calculado.  Sem cor = rótulo ou texto fixo."
+  },
+  {
+   "titulo": "Regras de contagem",
+   "texto": "Conte cada pessoa uma vez (CPF único). Não some públicos diferentes sem checar duplicidade. Registre a definição usada em cada linha. 2026 é período parcial."
+  },
+  {
+   "titulo": "Pontos que dependem de decisão",
+   "texto": "Janela de acompanhamento da reincidência; custo anual por pessoa presa e anos evitados (base do cálculo de economia); denominador da taxa de empregabilidade; critério de conclusão do Desenvolvimento. Sem esses itens, os indicadores correspondentes ficam em branco."
+  },
+  {
+   "titulo": "Origem dos números já preenchidos",
+   "texto": "Taxa nacional de 42,5% (CNJ) e reincidência de 1% (Dra. Ilana) vêm das instruções do projeto. Os valores divulgados na aba 4_Conciliacao vêm da Narrativa (slides 22 a 25) e do One Pager. Nenhum dado histórico foi inventado: o restante está em branco."
+  }
+ ],
+ "parametros": [
+  {
+   "chave": "taxaNacional",
+   "rotulo": "Taxa nacional de reincidência (referência)",
+   "valor": 0.425,
+   "unidade": "%",
+   "nota": "CNJ, Reentradas e Reiterações Infracionais (valor usado nas instruções do projeto e na Narrativa). Confirmar a janela de acompanhamento do estudo para comparar na mesma base."
+  },
+  {
+   "chave": "reincidenciaRecomecar",
+   "rotulo": "Reincidência divulgada pelo Recomeçar (materiais atuais)",
+   "valor": 0.01,
+   "unidade": "%",
+   "nota": "Levantamento próprio do Recomeçar, com acompanhamento de até 12 meses após o desenvolvimento (fonte citada nos materiais: Juíza Dra. Ilana Kabaczmk Luongo Kapah). Usado só na aba Conciliação, para comparar com o que a base calcular."
+  },
+  {
+   "chave": "janelaMeses",
+   "rotulo": "Janela de acompanhamento da reincidência",
+   "valor": 12,
+   "unidade": "meses",
+   "nota": "Acompanhamento de até 12 meses após o desenvolvimento. Atenção: a taxa nacional (CNJ) acompanha 4 a 5 anos, então as duas taxas não são comparáveis diretamente."
+  },
+  {
+   "chave": "custoAnual",
+   "rotulo": "Custo médio anual de uma pessoa presa",
+   "valor": 31145.92,
+   "unidade": "R$/ano",
+   "nota": "ESTIMATIVA, não é fato concreto. Exemplo 2025 (Senappen, painel Custo do Preso): custo médio mensal × 12. SP R$ 2.283,59 × 12 = R$ 27.403,08 | PE R$ 2.627,56 × 12 = R$ 31.530,72 | DF R$ 2.875,33 × 12 = R$ 34.503,96. Valor usado = média das três unidades. O custo varia por estado e por ano: atualizar a cada ano. Origem dos \"R$ 4 milhões\" (2024): 405 pessoas desenvolvidas em SP em 2024 × reincidência esperada × custo anual do preso em SP em 2024 (R$ 2.185,18 × 12 = R$ 26.222,16), considerando 1 ano de prisão; com a taxa nacional de 42,5%, dá cerca de R$ 4,5 milhões. A economia e o ROI social são estimativas: para um valor real, é necessário acompanhar a reincidência de fato das pessoas atendidas."
+  },
+  {
+   "chave": "anosEvitados",
+   "rotulo": "Tempo médio de encarceramento evitado por reincidência evitada",
+   "valor": null,
+   "unidade": "anos",
+   "nota": "Não preenchido: esse dado não existe. O Recomeçar tem o tempo de pena das pessoas atendidas referente à passagem pelo sistema prisional antes do atendimento, mas não há dado sobre o tempo de pena em caso de reincidência. A média interna de cumprimento de pena não pode ser usada aqui, porque as pessoas atendidas não são necessariamente reincidentes e uma nova pena pode ter duração diferente. Saber esse tempo exige acompanhamento sistemático e de longo prazo das pessoas atendidas, como um estudo próprio. Sem esse dado, a economia (IMP-05) e o ROI social (IMP-06), que estão na aba 2_Indicadores, não são calculados. As reincidências evitadas (IMP-04) também são uma estimativa."
+  },
+  {
+   "chave": "anoCorrente",
+   "rotulo": "Ano corrente (período parcial)",
+   "valor": 2026,
+   "unidade": "ano",
+   "nota": "Última coluna da aba 1_Levantamento é parcial."
+  }
+ ],
+ "listas": {
+  "statusLevantamento": [
+   "A levantar",
+   "Em levantamento",
+   "Conferido"
+  ],
+  "statusValidacao": [
+   "Rascunho",
+   "Em validação",
+   "Validado"
+  ],
+  "uso": [
+   "Sim",
+   "Não"
+  ]
+ },
+ "levantamento": [
+  {
+   "id": "A01",
+   "grupo": "A. Atendimento e cadastro",
+   "dado": "Egressos cadastrados (novos no ano)",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    2055,
+    2405,
+    2460,
+    2700,
+    1842,
+    1445,
+    435
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Pré-cadastro concluído no Cadastro360; cada CPF conta uma vez, no ano do primeiro cadastro.",
+   "obs": null
+  },
+  {
+   "id": "A02",
+   "grupo": "A. Atendimento e cadastro",
+   "dado": "Pessoas socializadas",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    619,
+    1998,
+    2063,
+    2358,
+    1267,
+    1075,
+    452
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Passaram pela etapa de Socialização da Trilha do Egresso.",
+   "obs": null
+  },
+  {
+   "id": "A03",
+   "grupo": "A. Atendimento e cadastro",
+   "dado": "Pessoas desenvolvidas",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    437,
+    1076,
+    1000,
+    1132,
+    1010,
+    848,
+    250
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Concluíram a etapa de Desenvolvimento (critério de conclusão: [PREENCHER]).",
+   "obs": null
+  },
+  {
+   "id": "A04",
+   "grupo": "A. Atendimento e cadastro",
+   "dado": "Reeducandos Cadastrados",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    0,
+    22,
+    119,
+    132,
+    137,
+    272,
+    229
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Pessoas em regime semiaberto/fechado atendidas por ações do Recomeçar.",
+   "obs": null
+  },
+  {
+   "id": "A05",
+   "grupo": "A. Atendimento e cadastro",
+   "dado": "Familiares de egressos atendidos",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    0,
+    1,
+    3,
+    8,
+    5,
+    33,
+    48
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Núcleo familiar atendido diretamente.",
+   "obs": null
+  },
+  {
+   "id": "A06",
+   "grupo": "A. Atendimento e cadastro",
+   "dado": "Jovens em risco de criminalização atendidos",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Inclui ações com Fundação CASA e projetos de prevenção.",
+   "obs": null
+  },
+  {
+   "id": "A07",
+   "grupo": "A. Atendimento e cadastro",
+   "dado": "Líderes Formados",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    0,
+    0,
+    0,
+    6,
+    28,
+    9,
+    7
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Concluintes do Recomeçar Para Liderar e formações equivalentes.",
+   "obs": null
+  },
+  {
+   "id": "B01",
+   "grupo": "B. Educação e qualificação",
+   "dado": "Egressos matriculados em qualificação profissional",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    197,
+    571,
+    493,
+    1190,
+    1151,
+    1388,
+    258
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Matrículas em cursos de qualificação (RecTech, Academia, Escola da Pizza etc.).",
+   "obs": null
+  },
+  {
+   "id": "B02",
+   "grupo": "B. Educação e qualificação",
+   "dado": "Qualificações profissionais concluídas",
+   "unidade": "nº",
+   "agregacao": "Soma",
+   "valores": [
+    187,
+    246,
+    295,
+    351,
+    625,
+    865,
+    149
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Certificados emitidos no ano.",
+   "obs": null,
+   "formulas": {
+    "6": "137+12"
+   }
+  },
+  {
+   "id": "B03",
+   "grupo": "B. Educação e qualificação",
+   "dado": "Egressos matriculados em universidades",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Novas matrículas no ano.",
+   "obs": null
+  },
+  {
+   "id": "B04",
+   "grupo": "B. Educação e qualificação",
+   "dado": "Turmas/cursos realizados( Desenvolvimento e Oficina Socioemocional)",
+   "unidade": "nº",
+   "agregacao": "Soma",
+   "valores": [
+    5,
+    98,
+    127,
+    157,
+    90,
+    128,
+    80
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Turmas iniciadas no ano.",
+   "obs": null
+  },
+  {
+   "id": "B05",
+   "grupo": "B. Educação e qualificação",
+   "dado": "Cursos de qualificação com turma realizada",
+   "unidade": "nº",
+   "agregacao": "Soma",
+   "valores": [
+    5,
+    21,
+    19,
+    26,
+    20,
+    31,
+    25
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Total de encontros/atividades registrados.",
+   "obs": null,
+   "formulas": {
+    "6": "20+5"
+   }
+  },
+  {
+   "id": "B06",
+   "grupo": "B. Educação e qualificação",
+   "dado": "Carga horária total de capacitação",
+   "unidade": "horas",
+   "agregacao": "Soma",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Soma da carga horária das turmas realizadas. Registrar se é por turma ou por pessoa: [PREENCHER].",
+   "obs": null
+  },
+  {
+   "id": "B07",
+   "grupo": "B. Educação e qualificação",
+   "dado": "Atendimentos individuais",
+   "unidade": "nº",
+   "agregacao": "Soma",
+   "valores": [
+    24,
+    735,
+    979,
+    960,
+    1082,
+    1045,
+    519
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Atendimentos de assistente social, psicanalista e mentoria.",
+   "obs": null
+  },
+  {
+   "id": "B08",
+   "grupo": "B. Educação e qualificação",
+   "dado": "Unidades prisionais com atuação",
+   "unidade": "nº",
+   "agregacao": "Último valor",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    1
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Quantidade de unidades onde há atividade no período.",
+   "obs": null
+  },
+  {
+   "id": "C01",
+   "grupo": "C. Empregabilidade e renda",
+   "dado": "Pessoas empregadas (CLT)",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    153,
+    99,
+    35,
+    77,
+    111,
+    35,
+    39
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Contratações formais comprovadas no ano.",
+   "obs": null,
+   "formulas": {
+    "0": "125+28"
+   }
+  },
+  {
+   "id": "C02",
+   "grupo": "C. Empregabilidade e renda",
+   "dado": "Pessoas em PJ/MEI/LEP/COOPERADO/Freelancer",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    27,
+    134,
+    99,
+    196,
+    216,
+    90,
+    35
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Atuação como PJ ou MEI.",
+   "obs": null
+  },
+  {
+   "id": "C03",
+   "grupo": "C. Empregabilidade e renda",
+   "dado": "Egressos empreendedores (negócio próprio)",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    0,
+    10,
+    0,
+    0,
+    0,
+    0,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Negócio próprio em operação.",
+   "obs": null
+  },
+  {
+   "id": "C04",
+   "grupo": "C. Empregabilidade e renda",
+   "dado": "Renda média antes do programa",
+   "unidade": "R$/mês",
+   "agregacao": "—",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Média informada no cadastro/entrada.",
+   "obs": null
+  },
+  {
+   "id": "C05",
+   "grupo": "C. Empregabilidade e renda",
+   "dado": "Renda média após o programa",
+   "unidade": "R$/mês",
+   "agregacao": "—",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Média informada no acompanhamento. Mesma amostra da linha C04.",
+   "obs": null
+  },
+  {
+   "id": "C06",
+   "grupo": "C. Empregabilidade e renda",
+   "dado": "Empresas que contrataram egressos",
+   "unidade": "nº",
+   "agregacao": "Último valor",
+   "valores": [
+    7,
+    27,
+    16,
+    31,
+    29,
+    18,
+    15
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Empresas distintas com contratação no período.",
+   "obs": null
+  },
+  {
+   "id": "C07",
+   "grupo": "C. Empregabilidade e renda",
+   "dado": "Encaminhamentos para vagas",
+   "unidade": "nº",
+   "agregacao": "Soma",
+   "valores": [
+    45,
+    234,
+    134,
+    649,
+    656,
+    236,
+    126
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Egressos encaminhados a processos seletivos.",
+   "obs": null
+  },
+  {
+   "id": "D01",
+   "grupo": "D. Reincidência (base de acompanhamento)",
+   "dado": "Egressos desenvolvidos acompanhados",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    187,
+    null,
+    500,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Egressos que completaram a janela de acompanhamento definida em Parametros.",
+   "obs": null
+  },
+  {
+   "id": "D02",
+   "grupo": "D. Reincidência (base de acompanhamento)",
+   "dado": "Reincidentes entre os acompanhados",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    9,
+    null,
+    5,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Voltaram ao sistema prisional dentro da janela. Registrar a fonte da checagem: [PREENCHER].",
+   "obs": null
+  },
+  {
+   "id": "E01",
+   "grupo": "E. Pesquisa qualitativa (pré e pós)",
+   "dado": "Respondentes da pesquisa final",
+   "unidade": "pessoas",
+   "agregacao": "Soma",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Quem respondeu pesquisa inicial e final.",
+   "obs": null
+  },
+  {
+   "id": "E02",
+   "grupo": "E. Pesquisa qualitativa (pré e pós)",
+   "dado": "Preparação para o trabalho (pré)",
+   "unidade": "nota 1–5",
+   "agregacao": "—",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Média da pesquisa inicial.",
+   "obs": null
+  },
+  {
+   "id": "E03",
+   "grupo": "E. Pesquisa qualitativa (pré e pós)",
+   "dado": "Preparação para o trabalho (pós)",
+   "unidade": "nota 1–5",
+   "agregacao": "—",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Média da pesquisa final, mesma escala e mesmos respondentes.",
+   "obs": null
+  },
+  {
+   "id": "E04",
+   "grupo": "E. Pesquisa qualitativa (pré e pós)",
+   "dado": "Autoconfiança (pré)",
+   "unidade": "nota 1–5",
+   "agregacao": "—",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Média da pesquisa inicial.",
+   "obs": null
+  },
+  {
+   "id": "E05",
+   "grupo": "E. Pesquisa qualitativa (pré e pós)",
+   "dado": "Autoconfiança (pós)",
+   "unidade": "nota 1–5",
+   "agregacao": "—",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Média da pesquisa final.",
+   "obs": null
+  },
+  {
+   "id": "E06",
+   "grupo": "E. Pesquisa qualitativa (pré e pós)",
+   "dado": "Identidade/pertencimento (pré)",
+   "unidade": "nota 1–5",
+   "agregacao": "—",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Média da pesquisa inicial.",
+   "obs": null
+  },
+  {
+   "id": "E07",
+   "grupo": "E. Pesquisa qualitativa (pré e pós)",
+   "dado": "Identidade/pertencimento (pós)",
+   "unidade": "nota 1–5",
+   "agregacao": "—",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Média da pesquisa final.",
+   "obs": null
+  },
+  {
+   "id": "F01",
+   "grupo": "F. Parcerias e investimento",
+   "dado": "Parcerias com órgãos públicos e Sistema de Justiça",
+   "unidade": "nº",
+   "agregacao": "Último valor",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Parcerias ativas no período.",
+   "obs": null
+  },
+  {
+   "id": "F02",
+   "grupo": "F. Parcerias e investimento",
+   "dado": "Empresas parceiras (total)",
+   "unidade": "nº",
+   "agregacao": "Último valor",
+   "valores": [
+    14,
+    48,
+    43,
+    81,
+    78,
+    59,
+    22
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Parceiras ativas, contratando ou não.",
+   "obs": null,
+   "formulas": {
+    "0": "12+2",
+    "1": "28+20",
+    "2": "19+24",
+    "3": "31+50",
+    "4": "31+47",
+    "5": "18+41"
+   }
+  },
+  {
+   "id": "F03",
+   "grupo": "F. Parcerias e investimento",
+   "dado": "Projetos realizados",
+   "unidade": "nº",
+   "agregacao": "Soma",
+   "valores": [
+    6,
+    7,
+    5,
+    6,
+    7,
+    8,
+    6
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Projetos executados no ano.",
+   "obs": null,
+   "formulas": {
+    "0": "1+2+3"
+   }
+  },
+  {
+   "id": "F04",
+   "grupo": "F. Parcerias e investimento",
+   "dado": "Investimento total executado (despesa)",
+   "unidade": "R$",
+   "agregacao": "Soma",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Despesa total do ano, base do ROI social.",
+   "obs": null
+  },
+  {
+   "id": "F05",
+   "grupo": "F. Parcerias e investimento",
+   "dado": "Ações em parceria com o Ministério Público",
+   "unidade": "nº",
+   "agregacao": "Soma",
+   "valores": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    1,
+    3
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Ações registradas no ano.",
+   "obs": null
+  },
+  {
+   "id": "G01",
+   "grupo": "G. Perfil dos atendidos",
+   "dado": "Homens entre os atendidos",
+   "unidade": "%",
+   "agregacao": "Último valor",
+   "valores": [
+    0.759,
+    0.771,
+    0.826,
+    0.836,
+    0.839,
+    0.855,
+    0.836
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Percentual sobre o total de cadastrados.",
+   "obs": null
+  },
+  {
+   "id": "G02",
+   "grupo": "G. Perfil dos atendidos",
+   "dado": "Pretos e pardos entre os atendidos",
+   "unidade": "%",
+   "agregacao": "Último valor",
+   "valores": [
+    0.757,
+    0.726,
+    0.773,
+    0.806,
+    0.799,
+    0.768,
+    0.761
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Percentual sobre o total de cadastrados.",
+   "obs": null
+  },
+  {
+   "id": "G03",
+   "grupo": "G. Perfil dos atendidos",
+   "dado": "Ensino fundamental incompleto",
+   "unidade": "%",
+   "agregacao": "Último valor",
+   "valores": [
+    0.362,
+    0.405,
+    0.387,
+    0.337,
+    0.345,
+    0.308,
+    0.23
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Percentual sobre o total de cadastrados.",
+   "obs": null
+  }
+ ],
+ "indicadores": [
+  {
+   "codigo": "ENT-01",
+   "tipo": "Entrega",
+   "ods": "4",
+   "nome": "Egressos cadastrados",
+   "unidade": "pessoas",
+   "como": "A01"
+  },
+  {
+   "codigo": "ENT-02",
+   "tipo": "Entrega",
+   "ods": "4",
+   "nome": "Egressos socializados",
+   "unidade": "pessoas",
+   "como": "A02"
+  },
+  {
+   "codigo": "ENT-03",
+   "tipo": "Entrega",
+   "ods": "4",
+   "nome": "Egressos desenvolvidos",
+   "unidade": "pessoas",
+   "como": "A03"
+  },
+  {
+   "codigo": "ENT-04",
+   "tipo": "Entrega",
+   "ods": "4",
+   "nome": "Beneficiados de outros públicos (reeducandos, famílias, jovens, líderes)",
+   "unidade": "pessoas",
+   "como": "A04 + A05 + A06 + A07"
+  },
+  {
+   "codigo": "ENT-05",
+   "tipo": "Entrega",
+   "ods": "4",
+   "nome": "Egressos matriculados em qualificação",
+   "unidade": "pessoas",
+   "como": "B01"
+  },
+  {
+   "codigo": "ENT-06",
+   "tipo": "Entrega",
+   "ods": "4",
+   "nome": "Qualificações profissionais concluídas",
+   "unidade": "nº",
+   "como": "B02"
+  },
+  {
+   "codigo": "ENT-07",
+   "tipo": "Entrega",
+   "ods": "4",
+   "nome": "Egressos matriculados em universidades",
+   "unidade": "pessoas",
+   "como": "B03"
+  },
+  {
+   "codigo": "ENT-08",
+   "tipo": "Entrega",
+   "ods": "4",
+   "nome": "Volume de atividades",
+   "unidade": "nº",
+   "como": "B05"
+  },
+  {
+   "codigo": "ENT-09",
+   "tipo": "Entrega",
+   "ods": "4",
+   "nome": "Carga horária das atividades",
+   "unidade": "horas",
+   "como": "B06"
+  },
+  {
+   "codigo": "ENT-10",
+   "tipo": "Entrega",
+   "ods": "16",
+   "nome": "Atendimentos psicossociais",
+   "unidade": "nº",
+   "como": "B07"
+  },
+  {
+   "codigo": "ENT-11",
+   "tipo": "Entrega",
+   "ods": "16",
+   "nome": "Unidades prisionais com atuação",
+   "unidade": "nº",
+   "como": "B08"
+  },
+  {
+   "codigo": "ENT-12",
+   "tipo": "Entrega",
+   "ods": "16",
+   "nome": "Parcerias com órgãos públicos e Sistema de Justiça",
+   "unidade": "nº",
+   "como": "F01"
+  },
+  {
+   "codigo": "ENT-13",
+   "tipo": "Entrega",
+   "ods": "8",
+   "nome": "Empresas que contrataram egressos",
+   "unidade": "nº",
+   "como": "C06"
+  },
+  {
+   "codigo": "RES-01",
+   "tipo": "Resultado",
+   "ods": "8",
+   "nome": "Geração de renda (CLT + PJ/MEI + empreendedores)",
+   "unidade": "pessoas",
+   "como": "C01 + C02 + C03"
+  },
+  {
+   "codigo": "RES-02",
+   "tipo": "Resultado",
+   "ods": "8",
+   "nome": "Taxa de empregabilidade",
+   "unidade": "%",
+   "como": "RES-01 ÷ ENT-03 (denominador: egressos desenvolvidos; alterar aqui se o Conselho definir outro)"
+  },
+  {
+   "codigo": "RES-03",
+   "tipo": "Resultado",
+   "ods": "8",
+   "nome": "Evolução de renda",
+   "unidade": "%",
+   "como": "C05 ÷ C04 − 1"
+  },
+  {
+   "codigo": "RES-04",
+   "tipo": "Resultado",
+   "ods": "4 / 8",
+   "nome": "Preparação para o trabalho (variação pós − pré)",
+   "unidade": "variação (pontos)",
+   "como": "E03 − E02"
+  },
+  {
+   "codigo": "RES-05",
+   "tipo": "Resultado",
+   "ods": "4 / 8",
+   "nome": "Autoconfiança (variação pós − pré)",
+   "unidade": "variação (pontos)",
+   "como": "E05 − E04"
+  },
+  {
+   "codigo": "RES-06",
+   "tipo": "Resultado",
+   "ods": "4 / 8",
+   "nome": "Identidade/pertencimento (variação pós − pré)",
+   "unidade": "variação (pontos)",
+   "como": "E07 − E06"
+  },
+  {
+   "codigo": "IMP-01",
+   "tipo": "Impacto",
+   "ods": "16",
+   "nome": "Taxa de reincidência (Recomeçar)",
+   "unidade": "%",
+   "como": "D02 ÷ D01"
+  },
+  {
+   "codigo": "IMP-02",
+   "tipo": "Impacto",
+   "ods": "16",
+   "nome": "Diferença para a taxa nacional (pontos percentuais)",
+   "unidade": "p.p.",
+   "como": "Taxa nacional (Parametros) − IMP-01"
+  },
+  {
+   "codigo": "IMP-03",
+   "tipo": "Impacto",
+   "ods": "16",
+   "nome": "Egressos não reincidentes",
+   "unidade": "pessoas",
+   "como": "D01 − D02"
+  },
+  {
+   "codigo": "IMP-04",
+   "tipo": "Impacto",
+   "ods": "16",
+   "nome": "Reincidências evitadas (estimativa)",
+   "unidade": "pessoas",
+   "como": "D01 × taxa nacional − D02. ESTIMATIVA: compara as pessoas desenvolvidas com a taxa nacional (CNJ); não é um número de reincidências medido."
+  },
+  {
+   "codigo": "IMP-05",
+   "tipo": "Impacto",
+   "ods": "16",
+   "nome": "Economia pela prevenção ao crime",
+   "unidade": "R$",
+   "como": "IMP-04 × custo anual por preso × anos evitados (Parametros). ESTIMATIVA. Não calculado: não há dado sobre quanto tempo uma pessoa ficaria presa em caso de reincidência. Esse valor depende de acompanhamento sistemático e de longo prazo das pessoas atendidas."
+  },
+  {
+   "codigo": "IMP-06",
+   "tipo": "Impacto",
+   "ods": "16",
+   "nome": "ROI social (retorno para cada R$ 1 investido)",
+   "unidade": "R$ por R$ 1",
+   "como": "IMP-05 ÷ F04 (investimento total). ESTIMATIVA. Não calculado, porque depende do IMP-05. Só poderá ser apurado com o acompanhamento de longo prazo das pessoas atendidas."
+  }
+ ],
+ "base": [
+  {
+   "codigo": "ENT-01",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-02",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-03",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-04",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-05",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-06",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-07",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-08",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-09",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-10",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-11",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-12",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-13",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "RES-01",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "RES-02",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "RES-03",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "RES-04",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "RES-05",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "RES-06",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "IMP-01",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "IMP-02",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "IMP-03",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "IMP-04",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "IMP-05",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "IMP-06",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  }
+ ],
+ "conciliacao": [
+  {
+   "n": 1,
+   "numero": "Egressos cadastrados (acumulado)",
+   "narrativa": {
+    "valor": 13282.0
+   },
+   "instrucoes": {
+    "valor": 13110.0
+   },
+   "calculado": {
+    "tipo": "ind",
+    "ref": "ENT-01",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 25"
+  },
+  {
+   "n": 2,
+   "numero": "Egressos desenvolvidos (acumulado)",
+   "narrativa": {
+    "valor": 5101.0
+   },
+   "instrucoes": {
+    "valor": 5001.0
+   },
+   "calculado": {
+    "tipo": "ind",
+    "ref": "ENT-03",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 25"
+  },
+  {
+   "n": 3,
+   "numero": "Matriculados em qualificação",
+   "narrativa": {
+    "valor": 4536.0
+   },
+   "instrucoes": {
+    "valor": 4422.0
+   },
+   "calculado": {
+    "tipo": "ind",
+    "ref": "ENT-05",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 25"
+  },
+  {
+   "n": 4,
+   "numero": "Formados com qualificação profissional",
+   "narrativa": {
+    "valor": 2400.0
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "ind",
+    "ref": "ENT-06",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 25; as instruções citam 4.422 'em qualificação' mas não 'formados'"
+  },
+  {
+   "n": 5,
+   "numero": "Egressos em geração de renda/empregados",
+   "narrativa": {
+    "valor": 1241.0
+   },
+   "instrucoes": {
+    "valor": 1219.0
+   },
+   "calculado": {
+    "tipo": "ind",
+    "ref": "RES-01",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 25 ('empregados')"
+  },
+  {
+   "n": 6,
+   "numero": "Matriculados em universidades",
+   "narrativa": {
+    "valor": 66.0
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "ind",
+    "ref": "ENT-07",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 25"
+  },
+  {
+   "n": 7,
+   "numero": "Líderes formados",
+   "narrativa": {
+    "valor": null
+   },
+   "instrucoes": {
+    "valor": 40.0
+   },
+   "calculado": {
+    "tipo": "lev",
+    "ref": "A07",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Instruções do projeto"
+  },
+  {
+   "n": 8,
+   "numero": "Reincidência entre quem passa pelo programa",
+   "narrativa": {
+    "param": "reincidenciaRecomecar"
+   },
+   "instrucoes": {
+    "param": "reincidenciaRecomecar"
+   },
+   "calculado": {
+    "tipo": "ind",
+    "ref": "IMP-01",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Workshop 1 e instruções; fonte externa (Juíza Ilana)"
+  },
+  {
+   "n": 9,
+   "numero": "Reincidência nacional",
+   "narrativa": {
+    "param": "taxaNacional"
+   },
+   "instrucoes": {
+    "param": "taxaNacional"
+   },
+   "calculado": {
+    "tipo": "param",
+    "ref": "taxaNacional",
+    "col": null
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "CNJ; vem de Parametros"
+  },
+  {
+   "n": 10,
+   "numero": "ROI social em 2024 (R$ por R$ 1)",
+   "narrativa": {
+    "valor": 16.0
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "ind",
+    "ref": "IMP-06",
+    "col": "2024"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "One Pager e Narrativa (valores de 2024)"
+  },
+  {
+   "n": 11,
+   "numero": "Economia ao Estado em 2024 (R$)",
+   "narrativa": {
+    "valor": 4000000.0
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "ind",
+    "ref": "IMP-05",
+    "col": "2024"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "One Pager e Narrativa ('R$ 4 milhões')"
+  },
+  {
+   "n": 12,
+   "numero": "Perfil: homens",
+   "narrativa": {
+    "valor": 0.8
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "lev",
+    "ref": "G01",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 24"
+  },
+  {
+   "n": 13,
+   "numero": "Perfil: pretos e pardos",
+   "narrativa": {
+    "valor": 0.76
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "lev",
+    "ref": "G02",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 24"
+  },
+  {
+   "n": 14,
+   "numero": "Perfil: ensino fundamental incompleto",
+   "narrativa": {
+    "valor": 0.342
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "lev",
+    "ref": "G03",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 24. Em 2026, o ensino médio completo passou a ser a escolaridade principal entre os egressos cadastrados (37,3%). O fundamental incompleto, maior faixa até 2025, caiu para 23,1%, e o ensino médio no total chega a 60,4%. A mudança acompanha a tendência nacional (expansão do ensino médio, progressão continuada e queda do abandono escolar) e o atendimento também por aplicativo."
+  },
+  {
+   "n": 15,
+   "numero": "Empresas parceiras",
+   "narrativa": {
+    "valor": null
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "lev",
+    "ref": "F02",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 22: ainda aparece como 'XX'"
+  },
+  {
+   "n": 16,
+   "numero": "Projetos realizados",
+   "narrativa": {
+    "valor": null
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "lev",
+    "ref": "F03",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 22: ainda aparece como 'XX'"
+  },
+  {
+   "n": 17,
+   "numero": "Penitenciárias atendidas",
+   "narrativa": {
+    "valor": null
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "lev",
+    "ref": "B08",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 22: ainda aparece como 'XX'"
+  },
+  {
+   "n": 18,
+   "numero": "Ações em parceria com o Ministério Público",
+   "narrativa": {
+    "valor": null
+   },
+   "instrucoes": {
+    "valor": null
+   },
+   "calculado": {
+    "tipo": "lev",
+    "ref": "F05",
+    "col": "acum"
+   },
+   "oficial": null,
+   "decisao": null,
+   "obs": "Narrativa, slide 22: ainda aparece como 'XX'"
+  }
+ ]
+}

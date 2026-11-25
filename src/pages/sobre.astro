@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import dados from '../data/indicadores.json';
+---
+<Base titulo="Sobre" ativo="sobre">
+  <h1>Sobre esta base</h1>
+  <p class="sub">Texto da aba <code>LEIA-ME</code> da planilha original e instruções de uso do painel.</p>
+  <div class="card">
+    <dl class="lista-sobre" style="margin:0">
+      {dados.leiaMe.map((i) => (<><dt>{i.titulo}</dt><dd>{i.texto}</dd></>))}
+    </dl>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>Como editar e publicar os números</h2>
+    <ol>
+      <li><b>Editar:</b> altere valores em <a href="../dados/">Levantamento</a>, <a href="../parametros/">Parâmetros</a>, <a href="../base/">Base única</a> ou <a href="../conciliacao/">Conciliação</a>. As edições ficam salvas <i>neste navegador</i> (localStorage) e o painel recalcula na hora.</li>
+      <li><b>Guardar/compartilhar:</b> clique em <b>Exportar JSON</b> (topo). Outra pessoa pode abrir o painel e usar <b>Importar JSON</b> para ver os mesmos números.</li>
+      <li><b>Publicar para todos:</b> substitua <code>src/data/indicadores.json</code> pelo arquivo exportado, faça commit e o deploy (ex.: Vercel) gera o site com os novos números.</li>
+      <li><b>Versão pública somente leitura:</b> faça o build com <code>PUBLIC_EDITAVEL=false</code> — esconde importar/descartar e ignora edições locais.</li>
+    </ol>
+    <p class="muted">Os dados de origem foram lidos de <code>{dados.meta.geradoDe}</code>. Para reimportar uma planilha nova: <code>npm run importar -- caminho/planilha.xlsx</code>.</p>
+  </div>
+</Base>

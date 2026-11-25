@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base titulo="Parâmetros" ativo="parametros">
+  <h1>Parâmetros e premissas</h1>
+  <p class="sub">Premissas usadas nos cálculos de impacto (aba <code>Parametros</code>). Alterar aqui recalcula IMP-02, IMP-04, IMP-05 e IMP-06. Deixe “Tempo de encarceramento evitado” vazio enquanto não houver dado real: sem ele, economia e ROI social não são calculados.</p>
+  <div class="tabela-wrap"><table id="tab"></table></div>
+  <script>
+    import { getDados } from '../lib/store';
+    import { vincular } from '../lib/ui';
+    import { esc } from '../lib/format';
+    const d = getDados();
+    document.getElementById('tab')!.innerHTML = `<thead><tr><th>Parâmetro</th><th class="n">Valor</th><th>Unid.</th><th>Fonte / observação</th></tr></thead><tbody>${d.parametros
+      .map((p) => `<tr><td style="min-width:260px;font-weight:600">${esc(p.rotulo)}</td>
+        <td class="n"><input data-num data-key="p:${p.chave}" data-unidade="${esc(p.unidade)}" data-col="p" inputmode="decimal" style="width:110px"></td>
+        <td class="muted">${esc(p.unidade)}</td><td style="max-width:760px;font-size:12px;color:#5b6573">${esc(p.nota)}</td></tr>`).join('')}</tbody>`;
+    vincular(document.getElementById('tab')!);
+  </script>
+</Base>

@@ -1,0 +1,22 @@
+{
+  "name": "recomecar-indicadores",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "node --experimental-strip-types scripts/validar-calculos.ts",
+    "importar": "python3 scripts/xlsx_para_json.py"
+  },
+  "dependencies": {
+    "astro": "^7.4.13",
+    "chart.js": "^4.6.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "latest",
+    "typescript": "^5.9.0"
+  }
+}

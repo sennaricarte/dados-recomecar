@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base titulo="Indicadores" ativo="indicadores">
+  <h1>Indicadores calculados</h1>
+  <p class="sub">Entregas, Resultados e Impactos do novo mapa de KPIs (aba <code>2_Indicadores</code>). Tudo é calculado a partir do Levantamento — para mudar um número, edite o dado de origem.</p>
+  <div class="filtros">
+    <label>Tipo <select id="f-tipo"><option value="">Todos</option><option>Entrega</option><option>Resultado</option><option>Impacto</option></select></label>
+    <label>ODS <select id="f-ods"><option value="">Todas</option></select></label>
+    <label class="chk"><input type="checkbox" id="f-vazios" /> Mostrar só indicadores com algum dado</label>
+  </div>
+  <div class="tabela-wrap"><table id="tab"></table></div>
+  <p class="rodape">— = sem dado suficiente para calcular. “Estimativa” indica indicador que compara com a taxa nacional ou premissas (veja <a href="../parametros/">Parâmetros</a>). 2026* é parcial.</p>
+  <script>
+    import { getDados, getCalc, onChange } from '../lib/store';
+    import { esc, formatar } from '../lib/format';
+
+    const tab = document.getElementById('tab')!;
+    const fTipo = document.getElementById('f-tipo') as HTMLSelectElement;
+    const fOds = document.getElementById('f-ods') as HTMLSelectElement;
+    const fVaz = document.getElementById('f-vazios') as HTMLInputElement;
+    [...new Set(getDados().indicadores.flatMap((i) => i.ods.split('/').map((x) => x.trim())))].sort().forEach((o) => fOds.add(new Option('ODS ' + o, o)));
+
+    function render() {
+      const d = getDados(), c = getCalc();
+      const anos = d.meta.anos.map((a) => (a === d.meta.parcial ? a + '*' : a));
+      let tipo = '';
+      const linhas = d.indicadores
+        .filter((m) => (!fTipo.value || m.tipo === fTipo.value) && (!fOds.value || m.ods.split('/').map((x) => x.trim()).includes(fOds.value)) && (!fVaz.checked || c.ind[m.codigo].some((v) => v !== null)))
+        .map((m) => {
+          const cab = m.tipo !== tipo ? ((tipo = m.tipo), `<tr class="grupo"><td colspan="${anos.length + 5}">${tipo}s</td></tr>`) : '';
+          const est = /ESTIMATIVA/.test(m.como) ? '<span class="tag">estimativa</span> ' : '';
+          const naoCalc = /Não calculado/.test(m.como) && c.ind[m.codigo].every((v) => v === null) ? '<span class="tag">não calculado: falta premissa</span> ' : '';
+          return `${cab}<tr><td class="col-id">${m.codigo}</td><td><span class="ods">ODS ${esc(m.ods)}</span></td>
+            <td style="min-width:280px" title="${esc(m.como)}">${est}${naoCalc}${esc(m.nome)}</td>
+            ${c.ind[m.codigo].map((v, i) => `<td class="n ${i === 7 ? 'calc' : ''} ${v === null ? 'vazio' : ''}">${formatar(v, m.unidade)}</td>`).join('')}
+            <td class="muted">${esc(m.unidade)}</td></tr>`;
+        });
+      tab.innerHTML = `<thead><tr><th class="col-id">Código</th><th>ODS</th><th>Indicador</th>${anos.map((a) => `<th class="n">${a}</th>`).join('')}<th class="n">Acumulado</th><th>Unid.</th></tr></thead><tbody>${linhas.join('')}</tbody>`;
+    }
+    [fTipo, fOds, fVaz].forEach((el) => el.addEventListener('input', render));
+    onChange(render);
+    render();
+  </script>
+</Base>

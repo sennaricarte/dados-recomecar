@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base titulo="Levantamento" ativo="dados">
+  <h1>Levantamento de dados</h1>
+  <p class="sub">
+    Números brutos por ano (equivale à aba <code>1_Levantamento</code>). Clique em uma célula, digite e saia — o painel e os indicadores recalculam na hora.
+    Células em amarelo forte foram editadas neste navegador; passe o mouse para ver o valor publicado. Use ↑ ↓ / Enter para descer na coluna.
+  </p>
+  <div class="filtros">
+    <label>Grupo <select id="f-grupo"><option value="">Todos</option></select></label>
+    <label>Buscar <input type="search" id="f-busca" placeholder="ex.: qualificações" /></label>
+    <label>Status <select id="f-status"><option value="">Todos</option></select></label>
+  </div>
+  <div class="tabela-wrap"><table id="tab"></table></div>
+  <p class="rodape">* 2026 é período parcial. Percentuais são digitados em % (ex.: <code>75,9</code>). Campos vazios = não levantado. Acumulado segue a regra de cada linha (Soma / Último valor).</p>
+  <script>
+    import { getDados, getCalc, onChange } from '../lib/store';
+    import { vincular } from '../lib/ui';
+    import { esc, formatar } from '../lib/format';
+
+    const d = getDados();
+    const tab = document.getElementById('tab')!;
+    const selG = document.getElementById('f-grupo') as HTMLSelectElement;
+    const selS = document.getElementById('f-status') as HTMLSelectElement;
+    const busca = document.getElementById('f-busca') as HTMLInputElement;
+    [...new Set(d.levantamento.map((x) => x.grupo))].forEach((g) => selG.add(new Option(g, g)));
+    d.listas.statusLevantamento.forEach((s) => selS.add(new Option(s, s)));
+
+    const anos = d.meta.anos.map((a) => (a === d.meta.parcial ? `${a}*` : a));
+    tab.innerHTML = `
+      <thead><tr>
+        <th class="col-id">ID</th><th>Dado</th><th>Unid.</th>
+        ${anos.map((a) => `<th class="n ${a.endsWith('*') ? 'parcial' : ''}">${a}</th>`).join('')}
+        <th class="n">Acumulado</th><th>Status</th><th>Fonte</th><th>Responsável</th><th>Definição / critério</th><th>Obs.</th>
+      </tr></thead>
+      <tbody>${(() => {
+        let g = '';
+        return d.levantamento.map((it) => {
+          const cab = it.grupo !== g ? ((g = it.grupo), `<tr class="grupo" data-grupo="${esc(g)}"><td colspan="${anos.length + 8}">${esc(g)}</td></tr>`) : '';
+          const cels = it.valores.map((_, i) =>
+            `<td class="n"><input data-num data-key="v:${it.id}:${i}" data-col="v${i}" data-unidade="${esc(it.unidade)}" inputmode="decimal" ${it.formulas?.[i] ? `data-formula="${esc(it.formulas[i])}"` : ''} aria-label="${esc(it.dado)} ${anos[i]}"></td>`).join('');
+          const opts = d.listas.statusLevantamento.map((s) => `<option>${esc(s)}</option>`).join('');
+          return `${cab}<tr data-id="${it.id}" data-grupo="${esc(it.grupo)}" data-busca="${esc((it.id + ' ' + it.dado).toLowerCase())}">
+            <td class="col-id">${it.id}</td><td class="dado">${esc(it.dado)}<div class="muted" style="font-size:11px">${esc(it.agregacao)}</div></td><td class="muted">${esc(it.unidade)}</td>
+            ${cels}<td class="n calc" data-acum="${it.id}"></td>
+            <td><select data-key="l:${it.id}:status" data-col="st">${opts}</select></td>
+            <td><input class="txt" type="text" data-key="l:${it.id}:fonte" data-col="fo"></td>
+            <td><input class="txt" type="text" data-key="l:${it.id}:responsavel" data-col="re"></td>
+            <td><input class="txt largo" type="text" data-key="l:${it.id}:definicao" data-col="de" title="${esc(it.definicao)}"></td>
+            <td><input class="txt" type="text" data-key="l:${it.id}:obs" data-col="ob"></td></tr>`;
+        }).join('');
+      })()}</tbody>`;
+
+    // marca células originadas de fórmula (=137+12) com dica
+    tab.querySelectorAll<HTMLInputElement>('[data-formula]').forEach((el) => (el.dataset.dica = `Na planilha: =${el.dataset.formula}`));
+
+    const pintar = vincular(tab);
+    const acum = () => {
+      const c = getCalc();
+      const dd = getDados();
+      tab.querySelectorAll<HTMLElement>('[data-acum]').forEach((td) => {
+        const it = dd.levantamento.find((x) => x.id === td.dataset.acum)!;
+        td.textContent = formatar(c.lev[it.id][7], it.unidade);
+      });
+    };
+    onChange(acum);
+    acum();
+
+    const filtrar = () => {
+      const g = selG.value, s = selS.value, q = busca.value.trim().toLowerCase();
+      const dd = getDados();
+      const visiveis = new Set<string>();
+      tab.querySelectorAll<HTMLElement>('tbody tr[data-id]').forEach((tr) => {
+        const it = dd.levantamento.find((x) => x.id === tr.dataset.id)!;
+        const ok = (!g || it.grupo === g) && (!s || it.status === s) && (!q || tr.dataset.busca!.includes(q));
+        tr.hidden = !ok;
+        if (ok) visiveis.add(it.grupo);
+      });
+      tab.querySelectorAll<HTMLElement>('tr.grupo').forEach((tr) => (tr.hidden = !visiveis.has(tr.dataset.grupo!)));
+    };
+    [selG, selS, busca].forEach((el) => el.addEventListener('input', filtrar));
+    onChange(filtrar);
+  </script>
+</Base>

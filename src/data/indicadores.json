@@ -532,7 +532,7 @@
   {
    "id": "C06",
    "grupo": "C. Empregabilidade e renda",
-   "dado": "Empresas que contrataram egressos",
+   "dado": "Empresas que contrataram egressos (ativas no ano)",
    "unidade": "nº",
    "agregacao": "Último valor",
    "valores": [
@@ -547,7 +547,7 @@
    "fonte": null,
    "responsavel": null,
    "status": "A levantar",
-   "definicao": "Empresas distintas com contratação no período.",
+   "definicao": "Retrato do ano: empresas ativas que empregaram egressos naquele ano. Não é cumulativo — não somar nem ler como histórico (para o histórico, ver C08).",
    "obs": null
   },
   {
@@ -569,6 +569,27 @@
    "responsavel": null,
    "status": "A levantar",
    "definicao": "Egressos encaminhados a processos seletivos.",
+   "obs": null
+  },
+  {
+   "id": "C08",
+   "grupo": "C. Empregabilidade e renda",
+   "dado": "Empresas que já empregaram egressos (histórico, CLT ou cooperado)",
+   "unidade": "nº",
+   "agregacao": "Último valor",
+   "valores": [
+    13,
+    34,
+    42,
+    71,
+    87,
+    98,
+    105
+   ],
+   "fonte": "Analista de dados do Instituto (observações ao painel, nov/2026)",
+   "responsavel": "Analista de dados",
+   "status": "Em levantamento",
+   "definicao": "Cada empresa conta uma única vez, a partir do primeiro ano em que contratou (CLT ou cooperado). Valor cumulativo: o último ano é o total histórico.",
    "obs": null
   },
   {
@@ -1017,7 +1038,7 @@
    "codigo": "ENT-10",
    "tipo": "Entrega",
    "ods": "16",
-   "nome": "Atendimentos psicossociais",
+   "nome": "Atendimento individual",
    "unidade": "nº",
    "como": "B07"
   },
@@ -1041,9 +1062,25 @@
    "codigo": "ENT-13",
    "tipo": "Entrega",
    "ods": "8",
-   "nome": "Empresas que contrataram egressos",
+   "nome": "Empresas que contrataram egressos (ativas no ano)",
    "unidade": "nº",
-   "como": "C06"
+   "como": "C06 — retrato do ano, não cumulativo"
+  },
+  {
+   "codigo": "ENT-14",
+   "tipo": "Entrega",
+   "ods": "4",
+   "nome": "Total de cadastrados (egressos + reeducandos)",
+   "unidade": "pessoas",
+   "como": "A01 + A04"
+  },
+  {
+   "codigo": "ENT-15",
+   "tipo": "Entrega",
+   "ods": "8",
+   "nome": "Empresas que já empregaram egressos (histórico)",
+   "unidade": "nº",
+   "como": "C08 — cada empresa conta uma vez, desde a 1ª contratação"
   },
   {
    "codigo": "RES-01",
@@ -1289,6 +1326,30 @@
   },
   {
    "codigo": "ENT-13",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-14",
+   "responsavel": null,
+   "status": "Rascunho",
+   "atualizacao": null,
+   "usos": {
+    "site": null,
+    "relatorio": null,
+    "isps": null,
+    "governo": null
+   }
+  },
+  {
+   "codigo": "ENT-15",
    "responsavel": null,
    "status": "Rascunho",
    "atualizacao": null,

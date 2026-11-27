@@ -15,17 +15,17 @@ import Base from '../layouts/Base.astro';
   <section class="kpis" id="kpis" aria-label="Indicadores principais"></section>
 
   <section class="grade">
-    <div class="card"><h2>Trilha do egresso por ano</h2><p class="nota">Cadastrados → socializados → desenvolvidos (pessoas)</p><div class="chart"><canvas id="g-trilha" role="img" aria-label="Barras agrupadas: cadastrados, socializados e desenvolvidos por ano"></canvas></div></div>
+    <div class="card"><h2>Trilha do egresso por ano</h2><p class="nota">Cadastrados (egressos + reeducandos) → socializados → desenvolvidos (pessoas)</p><div class="chart"><canvas id="g-trilha" role="img" aria-label="Barras agrupadas: cadastrados, socializados e desenvolvidos por ano"></canvas></div></div>
     <div class="card"><h2>Funil do período selecionado</h2><p class="nota" id="n-funil"></p><div class="chart"><canvas id="g-funil" role="img" aria-label="Funil: cadastrados, socializados, desenvolvidos e geração de renda"></canvas></div></div>
     <div class="card"><h2>Qualificação profissional</h2><p class="nota">Matrículas e certificados concluídos por ano</p><div class="chart"><canvas id="g-qualif" role="img" aria-label="Matrículas e qualificações concluídas por ano"></canvas></div></div>
     <div class="card"><h2>Geração de renda por vínculo</h2><p class="nota">CLT, PJ/MEI/cooperado/freelancer e empreendedores (pessoas)</p><div class="chart"><canvas id="g-renda" role="img" aria-label="Barras empilhadas de geração de renda por vínculo"></canvas></div></div>
     <div class="card"><h2>Taxa de empregabilidade</h2><p class="nota">Geração de renda ÷ egressos desenvolvidos (RES-02)</p><div class="chart"><canvas id="g-taxa" role="img" aria-label="Linha da taxa de empregabilidade por ano"></canvas></div></div>
     <div class="card"><h2>Outros públicos atendidos</h2><p class="nota">Reeducandos, familiares, jovens em risco e líderes formados</p><div class="chart"><canvas id="g-outros" role="img" aria-label="Barras empilhadas de outros públicos"></canvas></div></div>
     <div class="card"><h2>Perfil dos atendidos</h2><p class="nota">% sobre o total de cadastrados no ano</p><div class="chart"><canvas id="g-perfil" role="img" aria-label="Linhas do perfil dos atendidos"></canvas></div></div>
-    <div class="card"><h2>Rede de empresas</h2><p class="nota">Empresas parceiras × empresas que contrataram egressos</p><div class="chart"><canvas id="g-empresas" role="img" aria-label="Empresas parceiras e empresas que contrataram por ano"></canvas></div></div>
-    <div class="card larga"><h2>Reincidência</h2><p class="nota" id="n-reinc"></p><div class="chart" style="height:230px"><canvas id="g-reinc" role="img" aria-label="Comparação de taxas de reincidência"></canvas></div></div>
+    <div class="card"><h2>Rede de empresas</h2><p class="nota">Parceiras × que contrataram no ano (retrato anual) × histórico acumulado de contratantes</p><div class="chart"><canvas id="g-empresas" role="img" aria-label="Empresas parceiras e empresas que contrataram por ano"></canvas></div></div>
+    <div class="card larga"><h2>Reincidência: quem volta ao sistema prisional</h2><p class="nota" id="n-reinc" style="font-size:14px;color:var(--ink);max-width:95ch"></p><div class="chart" style="height:190px"><canvas id="g-reinc" role="img" aria-label="Taxa de reincidência: média nacional comparada aos egressos do Recomeçar"></canvas></div></div>
   </section>
-  <p class="rodape">* 2026 é período parcial; “Até 2020” reúne vários anos, então não é comparável a um ano isolado. Indicadores de impacto (reincidência, economia, ROI) são estimativas e dependem das premissas em <a href="./parametros/">Parâmetros</a>; a taxa nacional (CNJ) acompanha 4–5 anos e a do Recomeçar até 12 meses, então não são diretamente comparáveis.</p>
+  <p class="rodape">* 2026 é período parcial; “Até 2020” reúne vários anos, então não é comparável a um ano isolado. Indicadores de impacto (reincidência, economia, ROI) são estimativas e dependem das premissas em <a href="./parametros/">Parâmetros</a>.</p>
 
   <script>
     import { Chart, BarController, BarElement, LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
@@ -74,7 +74,7 @@ import Base from '../layouts/Base.astro';
       const sel = selP.value === 'acum' ? 7 : Number(selP.value);
 
       // ---- cartões
-      const kp: [string, string][] = [['ENT-01', 'Cadastrados'], ['ENT-02', 'Socializados'], ['ENT-03', 'Desenvolvidos'], ['ENT-06', 'Qualificações concluídas'], ['RES-01', 'Geração de renda'], ['RES-02', 'Taxa de empregabilidade'], ['ENT-13', 'Empresas que contrataram'], ['ENT-10', 'Atendimentos psicossociais']];
+      const kp: [string, string][] = [['ENT-14', 'Cadastrados (egressos + reeducandos)'], ['ENT-02', 'Socializados'], ['ENT-03', 'Desenvolvidos'], ['ENT-06', 'Qualificações concluídas'], ['RES-01', 'Geração de renda'], ['RES-02', 'Taxa de empregabilidade'], ['ENT-15', 'Empresas que já empregaram egressos'], ['ENT-10', 'Atendimento individual']];
       $('kpis').innerHTML = kp.map(([cod, nome]) => {
         const m = d.indicadores.find((x) => x.codigo === cod)!;
         const v = c.ind[cod][sel], prev = sel >= 2 && sel <= 6 ? c.ind[cod][sel - 1] : null;
@@ -95,11 +95,11 @@ import Base from '../layouts/Base.astro';
       const tip = (u: string) => ({ tooltip: { callbacks: { label: (ctx: any) => ` ${ctx.dataset.label}: ${formatar(ctx.parsed.y ?? ctx.parsed.x, u)}` } } });
 
       montar('g-trilha', { type: 'bar', data: { labels, datasets: [
-        { label: 'Cadastrados', data: S('ENT-01'), ...barStyle(COR.vinho) }, { label: 'Socializados', data: S('ENT-02'), ...barStyle(COR.amarelo) }, { label: 'Desenvolvidos', data: S('ENT-03'), ...barStyle(COR.grafite) }] },
+        { label: 'Cadastrados', data: S('ENT-14'), ...barStyle(COR.vinho) }, { label: 'Socializados', data: S('ENT-02'), ...barStyle(COR.amarelo) }, { label: 'Desenvolvidos', data: S('ENT-03'), ...barStyle(COR.grafite) }] },
         options: { ...porAno, scales: { y: yInt }, plugins: tip('pessoas') } });
 
       // ---- funil
-      const fun: [string, number | null][] = [['Cadastrados', c.ind['ENT-01'][sel]], ['Socializados', c.ind['ENT-02'][sel]], ['Desenvolvidos', c.ind['ENT-03'][sel]], ['Geração de renda', c.ind['RES-01'][sel]]];
+      const fun: [string, number | null][] = [['Cadastrados', c.ind['ENT-14'][sel]], ['Socializados', c.ind['ENT-02'][sel]], ['Desenvolvidos', c.ind['ENT-03'][sel]], ['Geração de renda', c.ind['RES-01'][sel]]];
       $('n-funil').textContent = `${selP.value === 'acum' ? 'Acumulado' : rot(d.meta.anos[sel])} — conversão entre etapas`;
       montar('g-funil', { type: 'bar', data: { labels: fun.map((f) => f[0]), datasets: [{ label: 'Pessoas', data: fun.map((f) => f[1]), backgroundColor: ORDINAL, borderRadius: 4, borderSkipped: 'start', maxBarThickness: 38 }] },
         options: { indexAxis: 'y', scales: { x: yInt, y: { grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx: any) => {
@@ -125,15 +125,29 @@ import Base from '../layouts/Base.astro';
         { label: 'Homens', data: L('G01'), ...linhaStyle(COR.vinho) }, { label: 'Pretos e pardos', data: L('G02'), ...linhaStyle(COR.amarelo) }, { label: 'Fund. incompleto', data: L('G03'), ...linhaStyle(COR.grafite) }] },
         options: { ...porAno, scales: { y: { min: 0, max: 1, ticks: { callback: (v: any) => `${Math.round(Number(v) * 100)}%` }, grid: { color: '#efece9' } } }, plugins: tip('%') } });
 
-      montar('g-empresas', { type: 'line', data: { labels, datasets: [{ label: 'Empresas parceiras', data: L('F02'), ...linhaStyle(COR.vinho) }, { label: 'Empresas que contrataram', data: L('C06'), ...linhaStyle(COR.amarelo) }] },
+      montar('g-empresas', { type: 'line', data: { labels, datasets: [{ label: 'Empresas parceiras', data: L('F02'), ...linhaStyle(COR.vinho) }, { label: 'Contrataram no ano', data: L('C06'), ...linhaStyle(COR.amarelo) }, { label: 'Já empregaram (histórico)', data: L('C08'), ...linhaStyle(COR.grafite) }] },
         options: { ...porAno, scales: { y: yInt }, plugins: tip('nº') } });
 
-      // ---- reincidência
+      // ---- reincidência: leitura em linguagem simples + duas barras com valor escrito
       const nac = param(d, 'taxaNacional'), rec = param(d, 'reincidenciaRecomecar'), calc = c.ind['IMP-01'][7];
-      const barras: [string, number | null, string][] = [['Nacional (CNJ, 4–5 anos)', nac, COR.grafite], ['Recomeçar — divulgada (até 12 meses)', rec, COR.vinho], ['Recomeçar — calculada pela base (D02 ÷ D01)', calc, COR.amarelo]];
-      $('n-reinc').textContent = `Diferença para a taxa nacional: ${calc !== null && nac !== null ? formatar(nac - calc, 'p.p.') : '—'} (base: ${formatar(c.lev['D01'][7], 'pessoas')} egressos acompanhados, ${formatar(c.lev['D02'][7], 'pessoas')} reincidentes)`;
-      montar('g-reinc', { type: 'bar', data: { labels: barras.map((b) => b[0]), datasets: [{ label: 'Taxa de reincidência', data: barras.map((b) => b[1]), backgroundColor: barras.map((b) => b[2]), borderRadius: 4, borderSkipped: 'start', maxBarThickness: 34 }] },
-        options: { indexAxis: 'y', scales: { x: { beginAtZero: true, ticks: { callback: (v: any) => `${Number(v) * 100}%` }, grid: { color: '#efece9' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, ...tip('%') } } });
+      const acomp = c.lev['D01'][7], reinc = c.lev['D02'][7], janela = param(d, 'janelaMeses');
+      const por100 = (v: number) => (v * 100).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      $('n-reinc').innerHTML = calc !== null && nac !== null
+        ? `<b>De cada 100 egressos acompanhados, ${por100(calc)} voltaram ao sistema prisional</b>, contra ${por100(nac)} na média nacional. ` +
+          `<span class="muted">Base: ${formatar(reinc, 'pessoas')} de ${formatar(acomp, 'pessoas')} egressos acompanhados${janela ? ` por até ${janela} meses após o Desenvolvimento` : ''}. ` +
+          `Os períodos de acompanhamento são diferentes (a taxa nacional cobre 4 a 5 anos), então a comparação é indicativa.` +
+          `${rec !== null && Math.abs(rec - calc) > 0.0005 ? ` A taxa divulgada hoje nos materiais é ${por100(rec)}% — veja a aba Conciliação.` : ''}</span>`
+        : 'Sem dados de acompanhamento suficientes para calcular a reincidência (preencha D01 e D02 no Levantamento).';
+      const barras: [string[], number | null, string][] = [
+        [['Média nacional (CNJ)', 'acompanhamento de 4 a 5 anos'], nac, COR.grafite],
+        [['Egressos do Recomeçar', janela ? `acompanhamento de até ${janela} meses` : 'acompanhados pelo Instituto'], calc, COR.vinho],
+      ];
+      const rotulosNoFim = { id: 'rotulosNoFim', afterDatasetsDraw(chart: any) {
+        const { ctx } = chart; ctx.save(); ctx.font = '600 14px ' + Chart.defaults.font.family; ctx.fillStyle = '#2b2a2c'; ctx.textBaseline = 'middle';
+        chart.getDatasetMeta(0).data.forEach((bar: any, i: number) => { const v = chart.data.datasets[0].data[i]; if (v !== null && v !== undefined) ctx.fillText(`${por100(v)}%`, bar.x + 8, bar.y); });
+        ctx.restore(); } };
+      montar('g-reinc', { type: 'bar', plugins: [rotulosNoFim], data: { labels: barras.map((b) => b[0]), datasets: [{ label: 'Taxa de reincidência', data: barras.map((b) => b[1]), backgroundColor: barras.map((b) => b[2]), borderRadius: 4, borderSkipped: 'start', maxBarThickness: 40 }] },
+        options: { indexAxis: 'y', layout: { padding: { right: 56 } }, scales: { x: { beginAtZero: true, ticks: { callback: (v: any) => `${Number(v) * 100}%` }, grid: { color: '#efece9' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, ...tip('%') } } });
     }
 
     [selP, selDe, selAte, chkP].forEach((e) => e.addEventListener('input', render));

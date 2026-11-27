@@ -55,6 +55,8 @@ export function calcular(d: Dados): Calculo {
     set('ENT-11', c, L('B08', c));
     set('ENT-12', c, L('F01', c));
     set('ENT-13', c, L('C06', c));
+    set('ENT-14', c, somaOpc([L('A01', c), L('A04', c)]));
+    set('ENT-15', c, L('C08', c));
 
     set('RES-01', c, somaOpc([L('C01', c), L('C02', c), L('C03', c)]));
     set('RES-02', c, dividir(ind['RES-01'][c], ind['ENT-03'][c]));

@@ -532,7 +532,7 @@
   {
    "id": "C06",
    "grupo": "C. Empregabilidade e renda",
-   "dado": "Empresas que contrataram egressos (ativas no ano)",
+   "dado": "Empresas que contrataram no ano",
    "unidade": "nº",
    "agregacao": "Último valor",
    "valores": [
@@ -547,7 +547,7 @@
    "fonte": null,
    "responsavel": null,
    "status": "A levantar",
-   "definicao": "Retrato do ano: empresas ativas que empregaram egressos naquele ano. Não é cumulativo — não somar nem ler como histórico (para o histórico, ver C08).",
+   "definicao": "Empresas que fizeram ao menos uma contratação naquele ano. Retrato anual: não é o total da história (para o histórico, ver C08).",
    "obs": null
   },
   {
@@ -574,7 +574,7 @@
   {
    "id": "C08",
    "grupo": "C. Empregabilidade e renda",
-   "dado": "Empresas que já empregaram egressos (histórico, CLT ou cooperado)",
+   "dado": "Total de empresas que já contrataram",
    "unidade": "nº",
    "agregacao": "Último valor",
    "valores": [
@@ -589,7 +589,7 @@
    "fonte": "Analista de dados do Instituto (observações ao painel, nov/2026)",
    "responsavel": "Analista de dados",
    "status": "Em levantamento",
-   "definicao": "Cada empresa conta uma única vez, a partir do primeiro ano em que contratou (CLT ou cooperado). Valor cumulativo: o último ano é o total histórico.",
+   "definicao": "Todas as empresas que já contrataram egressos desde 2020 (CLT ou cooperado), cada uma contada uma única vez. Curva de crescimento da rede; valor cumulativo.",
    "obs": null
   },
   {
@@ -805,7 +805,7 @@
   {
    "id": "F02",
    "grupo": "F. Parcerias e investimento",
-   "dado": "Empresas parceiras (total)",
+   "dado": "Empresas com parceria ativa no ano",
    "unidade": "nº",
    "agregacao": "Último valor",
    "valores": [
@@ -820,7 +820,7 @@
    "fonte": null,
    "responsavel": null,
    "status": "A levantar",
-   "definicao": "Parceiras ativas, contratando ou não.",
+   "definicao": "Empresas que contrataram no ano + as que ainda têm egressos trabalhando. Em 2026, considera só São Paulo.",
    "obs": null,
    "formulas": {
     "0": "12+2",
@@ -1062,7 +1062,7 @@
    "codigo": "ENT-13",
    "tipo": "Entrega",
    "ods": "8",
-   "nome": "Empresas que contrataram egressos (ativas no ano)",
+   "nome": "Empresas que contrataram no ano",
    "unidade": "nº",
    "como": "C06 — retrato do ano, não cumulativo"
   },
@@ -1078,7 +1078,7 @@
    "codigo": "ENT-15",
    "tipo": "Entrega",
    "ods": "8",
-   "nome": "Empresas que já empregaram egressos (histórico)",
+   "nome": "Total de empresas que já contrataram",
    "unidade": "nº",
    "como": "C08 — cada empresa conta uma vez, desde a 1ª contratação"
   },

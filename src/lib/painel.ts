@@ -6,6 +6,8 @@ import { param } from './calc';
 type Cfg = any;
 const num = (v: number | null | undefined) => v ?? 0;
 const WINE = '#7b2a35', YEL = '#f9b91b', GRY = 'var(--g)';
+/** cor do texto sobre uma cor de fundo (o cinza muda de claro/escuro conforme o tema) */
+const tx = (c: string) => (c === YEL ? '#222' : c === GRY ? 'var(--on-g)' : '#fff');
 
 /** Teto "redondo" para o eixo, para que o gráfico acompanhe números editados. */
 function teto(v: number) {
@@ -37,7 +39,7 @@ export function iniciarPainel() {
     const l = (id: string) => lev[id].slice(0, N).map(num);
     const pct = (id: string) => lev[id].slice(0, N).map((v) => Math.round(num(v) * 1000) / 10);
     D = {
-      cad: ind['ENT-14'].slice(0, N).map(num), soc: l('A02'), dev: l('A03'), mat: l('B01'), con: l('B02'),
+      cad: ind['ENT-14'].slice(0, N).map(num), egr: l('A01'), soc: l('A02'), dev: l('A03'), mat: l('B01'), con: l('B02'),
       clt: l('C01'), pj: l('C02'), emp: l('C03'), par: l('F02'), contr: l('C06'), hist: l('C08'),
       ree: l('A04'), fam: l('A05'), lid: l('A07'), hom: pct('G01'), pp: pct('G02'), fi: pct('G03'),
     };
@@ -54,16 +56,17 @@ export function iniciarPainel() {
   const last = (k: string) => D[k][I() === null ? ULT : I()!];
   const razao = (a: number, b: number) => (b ? pc((100 * a) / b) : '—');
 
-  const pages: [string, string][] = [['geral', 'Visão geral'], ['trilha', 'Trilha do egresso'], ['qualif', 'Qualificação'], ['emprego', 'Empregabilidade'], ['empresas', 'Empresas'], ['publico', 'Quem atendemos'], ['reinc', 'Reincidência']];
+  const pages: [string, string][] = [['geral', 'Visão geral'], ['trilha', 'Trilha do egresso'], ['qualif', 'Qualificação'], ['emprego', 'Empregabilidade'], ['empresas', 'Empresas'], ['perfil', 'Perfil dos egressos'], ['publico', 'Outros públicos atendidos'], ['reinc', 'Reincidência']];
   $('nav').innerHTML = pages.map(([id, t]) => `<a href="#${id}" data-id="${id}">${t}</a>`).join('');
   $('seg').innerHTML = ([['all', 'Todos']] as string[][]).concat(Y.map((y, i) => [String(i), i === 0 ? '≤ 2020' : i === ULT ? y + '*' : y]))
     .map(([v, t]) => `<button data-p="${v}" class="${v === 'all' ? 'all' : ''}" aria-pressed="${v === 'all'}">${t}</button>`).join('');
 
   const leg = (id: string, it: string[][]) => { $(id).innerHTML = it.map(([t, c]) => `<span><i style="background:${c}"></i>${t}</span>`).join(''); };
-  leg('l1', [['Cadastrados', WINE], ['Desenvolvidos', YEL]]);
-  leg('l3', [['Cadastrados', WINE], ['Socializados', YEL], ['Desenvolvidos', GRY]]);
+  leg('l1', [['Egressos cadastrados', WINE], ['Desenvolvidos', YEL]]);
+  leg('l3', [['Egressos cadastrados', WINE], ['Socializados', YEL], ['Desenvolvidos', GRY]]);
   leg('l5', [['Matriculados', WINE], ['Concluídas', YEL]]);
-  leg('l8', [['Empresas parceiras', WINE], ['Contrataram no ano', YEL], ['Já empregaram (histórico)', GRY]]);
+  leg('l8', [['Empresas com parceria ativa no ano', WINE], ['Empresas que contrataram no ano', YEL], ['Total de empresas que já contrataram', GRY]]);
+  leg('l11', [['Homens', WINE], ['Pretos e pardos', YEL], ['Ensino fundamental incompleto', GRY]]);
   leg('l9', [['Reeducandos', WINE], ['Familiares', YEL], ['Líderes formados', GRY]]);
 
   function dl(k: string) {
@@ -72,7 +75,7 @@ export function iniciarPainel() {
     const d = (100 * (a - b)) / b;
     return `<div class="d ${d >= 0 ? 'up' : 'dn'}">${d >= 0 ? '▲' : '▼'} ${pc(Math.abs(d))} vs ${Y[i - 1]}</div>`;
   }
-  const card = (t: string, v: string, k?: string | null) => `<div class="card"><div class="t">${t}</div><div class="v">${v}</div>${k ? dl(k) : ''}</div>`;
+  const card = (t: string, v: string, k?: string | null, nota?: string) => `<div class="card"><div class="t">${t}</div><div class="v">${v}</div>${k ? dl(k) : ''}${nota ? `<div class="n">${nota}</div>` : ''}</div>`;
 
   function cols(el: HTMLElement, o: Cfg) {
     return () => {
@@ -122,22 +125,19 @@ export function iniciarPainel() {
 
   function donut(el: HTMLElement) {
     return () => {
-      const Wd = el.clientWidth, H = el.clientHeight; if (!Wd) return;
-      const parts: [string, number, string][] = [['CLT', val('clt'), WINE], ['PJ/MEI/cooperado/freela', val('pj'), YEL], ['Empreendedores', val('emp'), GRY]], tot = sum(parts.map((p) => p[1]));
-      const side = Wd >= 380, r = Math.min(H / 2 - 16, side ? Wd / 4.4 : Wd / 2 - 20), cx = side ? r + 14 : Wd / 2, cy = side ? H / 2 : r + 10, ri = r * 0.6;
+      if (!el.clientWidth) return;
+      const parts: [string, number, string][] = [['CLT', val('clt'), WINE], ['PJ/MEI/cooperado/freelancer', val('pj'), YEL], ['Empreendedores', val('emp'), GRY]], tot = sum(parts.map((p) => p[1]));
+      const cx = 100, cy = 100, r = 96, ri = 58;
       let a0 = -Math.PI / 2, s = '';
       parts.forEach(([, v, c], pi) => {
         if (!v) return;
-        const a1 = a0 + (2 * Math.PI * v) / tot - 1e-6, lg = a1 - a0 > Math.PI ? 1 : 0, p = (a: number, q: number) => [cx + q * Math.cos(a), cy + q * Math.sin(a)];
+        const full = v >= tot, a1 = a0 + (2 * Math.PI * v) / tot - (full ? 1e-4 : 1e-6), lg = a1 - a0 > Math.PI ? 1 : 0, p = (a: number, q: number) => [cx + q * Math.cos(a), cy + q * Math.sin(a)];
         const [x1, y1] = p(a0, r), [x2, y2] = p(a1, r), [x3, y3] = p(a1, ri), [x4, y4] = p(a0, ri);
         s += `<path d="M${x1} ${y1}A${r} ${r} 0 ${lg} 1 ${x2} ${y2}L${x3} ${y3}A${ri} ${ri} 0 ${lg} 0 ${x4} ${y4}Z" fill="${c}" data-i="${pi}"/>`; a0 = a1 + 1e-6;
       });
-      s += `<text x="${cx}" y="${cy + 8}" text-anchor="middle" font-size="24" font-weight="800" fill="var(--ink)">${fmt(tot)}</text>`;
-      let lx = side ? cx + r + 24 : 16, ly = side ? cy - 34 : cy + r + 26;
-      parts.forEach(([t, v, c]) => {
-        s += `<rect x="${lx}" y="${ly - 10}" width="10" height="10" rx="2" fill="${c}"/><text x="${lx + 16}" y="${ly}" font-size="13" fill="var(--mut)">${t}</text><text x="${lx + 16}" y="${ly + 18}" font-size="15" font-weight="800" fill="var(--ink)">${tot ? pc((100 * v) / tot) : '—'}</text>`; ly += 40;
-      });
-      el.innerHTML = `<svg>${s}</svg><div class="tip" hidden></div>`;
+      s += `<text x="${cx}" y="${cy + 2}" text-anchor="middle" font-size="26" font-weight="800" fill="var(--ink)">${fmt(tot)}</text><text x="${cx}" y="${cy + 20}" text-anchor="middle" font-size="10" fill="var(--mut)">pessoas</text>`;
+      const leg = parts.map(([t, v, c]) => `<li><i style="background:${c}"></i><span>${t}</span><b>${tot ? pc((100 * v) / tot) : '—'}</b><small>${fmt(v)} pessoas</small></li>`).join('');
+      el.innerHTML = `<div class="dn"><svg viewBox="0 0 200 200" role="img" aria-label="Geração de renda por vínculo">${s}</svg><ul class="dleg">${leg}</ul></div><div class="tip" hidden></div>`;
       const mv = (e: PointerEvent) => {
         const g = (e.target as Element).closest('[data-i]') as HTMLElement | null; if (!g) return esconder(el);
         const [t, v, c] = parts[+g.dataset.i!];
@@ -150,11 +150,11 @@ export function iniciarPainel() {
   function funnel(el: HTMLElement) {
     return () => {
       const Wd = el.clientWidth, H = el.clientHeight; if (!Wd) return;
-      const st: [string, number, string][] = [['Cadastrados', val('cad'), WINE], ['Socializados', val('soc'), '#a5525d'], ['Desenvolvidos', val('dev'), YEL], ['Geração de renda', val('ren'), GRY]];
+      const st: [string, number, string][] = [['Egressos cadastrados', val('egr'), WINE], ['Socializados', val('soc'), '#a5525d'], ['Desenvolvidos', val('dev'), YEL], ['Geração de renda', val('ren'), GRY]];
       const mx = st[0][1] || 1, bh = (H - 20) / st.length - 10; let s = '';
       st.forEach(([t, v, c], j) => {
         const w = Math.max(150, ((Wd - 20) * v) / mx), x = (Wd - w) / 2, y = 10 + j * (bh + 10);
-        s += `<rect x="${x}" y="${y}" width="${w}" height="${bh}" rx="6" fill="${c}" data-i="${j}"/><text x="${Wd / 2}" y="${y + bh / 2 - 2}" text-anchor="middle" font-size="12" fill="${c === YEL ? '#222' : '#fff'}">${t}</text><text x="${Wd / 2}" y="${y + bh / 2 + 15}" text-anchor="middle" font-size="15" font-weight="800" fill="${c === YEL ? '#222' : '#fff'}">${fmt(v)}</text>`;
+        s += `<rect x="${x}" y="${y}" width="${w}" height="${bh}" rx="6" fill="${c}" data-i="${j}"/><text x="${Wd / 2}" y="${y + bh / 2 - 2}" text-anchor="middle" font-size="12" fill="${tx(c)}">${t}</text><text x="${Wd / 2}" y="${y + bh / 2 + 15}" text-anchor="middle" font-size="15" font-weight="800" fill="${tx(c)}">${fmt(v)}</text>`;
       });
       el.innerHTML = `<svg>${s}</svg><div class="tip" hidden></div>`;
       const mv = (e: PointerEvent) => {
@@ -191,11 +191,12 @@ export function iniciarPainel() {
 
   const mx = (...a: number[][]) => teto(Math.max(...a.flat(), 0));
   const draws: Record<string, (() => void)[]> = {
-    geral: [() => cols($('f1'), { max: mx(D.cad, D.dev), bars: [[D.cad, WINE, 'Cadastrados'], [D.dev, YEL, 'Desenvolvidos']] })(), () => donut($('f2'))()],
-    trilha: [() => cols($('f3'), { max: mx(D.cad, D.soc, D.dev), bars: [[D.cad, WINE, 'Cadastrados'], [D.soc, YEL, 'Socializados'], [D.dev, GRY, 'Desenvolvidos']] })(), () => funnel($('f4'))()],
+    geral: [() => cols($('f1'), { max: mx(D.egr, D.dev), bars: [[D.egr, WINE, 'Egressos cadastrados'], [D.dev, YEL, 'Desenvolvidos']] })(), () => donut($('f2'))()],
+    trilha: [() => cols($('f3'), { max: mx(D.egr, D.soc, D.dev), bars: [[D.egr, WINE, 'Egressos cadastrados'], [D.soc, YEL, 'Socializados'], [D.dev, GRY, 'Desenvolvidos']] })(), () => funnel($('f4'))()],
     qualif: [() => cols($('f5'), { max: mx(D.mat, D.con), bars: [[D.mat, WINE, 'Matriculados'], [D.con, YEL, 'Concluídas']] })()],
-    emprego: [() => donut($('f6'))(), () => { const t = D.ren.map((v, i) => (D.dev[i] ? (100 * v) / D.dev[i] : 0)); cols($('f7'), { max: teto(Math.max(...t, 1) * 1.05), p: 1, lab: 1, lines: [[t, WINE, 'Empregabilidade']] })(); }],
-    empresas: [() => cols($('f8'), { max: mx(D.par, D.contr, D.hist), lab: 1, lines: [[D.par, WINE, 'Empresas parceiras'], [D.contr, YEL, 'Contrataram no ano'], [D.hist, GRY, 'Já empregaram (histórico)', true]] })()],
+    emprego: [() => donut($('f6'))(), () => { const t = D.ren.map((v, i) => (D.dev[i] ? (100 * v) / D.dev[i] : 0)); cols($('f7'), { max: Math.max(20, Math.ceil((Math.max(...t, 1) * 1.05) / 20) * 20), p: 1, lab: 1, lines: [[t, WINE, 'Empregabilidade']] })(); }],
+    empresas: [() => cols($('f8'), { max: mx(D.par, D.contr, D.hist), lab: 1, lines: [[D.par, WINE, 'Empresas com parceria ativa no ano'], [D.contr, YEL, 'Empresas que contrataram no ano'], [D.hist, GRY, 'Total de empresas que já contrataram', true]] })()],
+    perfil: [() => cols($('f11'), { max: Math.max(20, Math.ceil((Math.max(...D.hom, ...D.pp, ...D.fi, 1) * 1.05) / 20) * 20), p: 1, lab: 1, lines: [[D.hom, WINE, 'Homens', true], [D.pp, YEL, 'Pretos e pardos', true], [D.fi, GRY, 'Ensino fundamental incompleto', true]] })()],
     publico: [() => cols($('f9'), { max: teto(Math.max(...D.ree.map((v, i) => v + D.fam[i] + D.lid[i]), 1)), stack: 1, bars: [[D.ree, WINE, 'Reeducandos'], [D.fam, YEL, 'Familiares'], [D.lid, GRY, 'Líderes formados']] })()],
     reinc: [() => gauges($('f10'))()],
   };
@@ -203,12 +204,18 @@ export function iniciarPainel() {
   function cards() {
     const y = I() === null ? Y[ULT] : Y[I()!];
     const emp = razao(val('ren'), val('dev'));
-    $('c-geral').innerHTML = card('Cadastrados', fmt(val('cad')), 'cad') + card('Desenvolvidos', fmt(val('dev')), 'dev') + card('Qualificações concluídas', fmt(val('con')), 'con') + card('Geração de renda', fmt(val('ren')), 'ren') + card('Empregabilidade', emp);
-    $('c-trilha').innerHTML = card('Cadastrados', fmt(val('cad')), 'cad') + card('Socializados', fmt(val('soc')), 'soc') + card('Desenvolvidos', fmt(val('dev')), 'dev') + card('Conversão cadastro → desenvolvido', razao(val('dev'), val('cad')));
+    const nEmp = 'Gerações de renda em relação aos egressos desenvolvidos';
+    $('c-geral').innerHTML = card('Cadastrados', fmt(val('cad')), 'cad', 'Egressos + reeducandos') + card('Desenvolvidos', fmt(val('dev')), 'dev') + card('Qualificações concluídas', fmt(val('con')), 'con') + card('Geração de renda', fmt(val('ren')), 'ren') + card('Empregabilidade', emp, null, nEmp);
+    $('c-trilha').innerHTML = card('Egressos cadastrados', fmt(val('egr')), 'egr') + card('Socializados', fmt(val('soc')), 'soc') + card('Desenvolvidos', fmt(val('dev')), 'dev') + card('Conversão cadastro → desenvolvido', razao(val('dev'), val('egr')), null, 'Egressos desenvolvidos ÷ egressos cadastrados');
     $('c-qualif').innerHTML = card('Matriculados', fmt(val('mat')), 'mat') + card('Concluídas', fmt(val('con')), 'con') + card('Taxa de conclusão', razao(val('con'), val('mat')));
-    $('c-emprego').innerHTML = card('Geração de renda', fmt(val('ren')), 'ren') + card('CLT', fmt(val('clt')), 'clt') + card('Outros vínculos', fmt(val('out')), 'out') + card('Empregabilidade', emp);
-    $('c-empresas').innerHTML = card('Empresas parceiras · ' + y, fmt(last('par')), I() === null ? null : 'par') + card('Contrataram no ano · ' + y, fmt(last('contr')), I() === null ? null : 'contr') + card('Já empregaram (histórico) · ' + y, fmt(last('hist')), I() === null ? null : 'hist');
-    $('c-publico').innerHTML = card('Homens · ' + y, pc(last('hom'))) + card('Pretos e pardos · ' + y, pc(last('pp'))) + card('Fund. incompleto · ' + y, pc(last('fi'))) + card('Reeducandos', fmt(val('ree')), 'ree') + card('Familiares', fmt(val('fam')), 'fam');
+    $('c-emprego').innerHTML = card('Geração de renda', fmt(val('ren')), 'ren') + card('CLT', fmt(val('clt')), 'clt') + card('Outros vínculos', fmt(val('out')), 'out') + card('Empregabilidade', emp, null, nEmp);
+    const sp = (I() === null || I() === ULT) ? ' Em 2026, considera só São Paulo.' : '';
+    $('c-empresas').innerHTML = card('Empresas com parceria ativa no ano · ' + y, fmt(last('par')), I() === null ? null : 'par', 'Contrataram no ano + as que ainda têm egressos trabalhando.' + sp)
+      + card('Empresas que contrataram no ano · ' + y, fmt(last('contr')), I() === null ? null : 'contr', 'Pelo menos uma contratação no ano. Não é o total da história.')
+      + card('Total de empresas que já contrataram · ' + y, fmt(last('hist')), I() === null ? null : 'hist', 'Desde 2020, cada empresa contada uma única vez.');
+    const nPerfil = '% dos egressos cadastrados no ano';
+    $('c-perfil').innerHTML = card('Homens · ' + y, pc(last('hom')), null, nPerfil) + card('Pretos e pardos · ' + y, pc(last('pp')), null, nPerfil) + card('Ensino fundamental incompleto · ' + y, pc(last('fi')), null, nPerfil);
+    $('c-publico').innerHTML = card('Reeducandos', fmt(val('ree')), 'ree') + card('Familiares', fmt(val('fam')), 'fam') + card('Líderes formados', fmt(val('lid')), 'lid');
     const R = reinc();
     $('c-reinc').innerHTML = card('Egressos acompanhados', fmt(R.acomp)) + card('Reincidentes', fmt(R.reinc)) + card('Taxa Recomeçar', R.rec === null ? '—' : pc(R.rec)) + card('Taxa nacional (CNJ)', R.nac === null ? '—' : pc(R.nac));
   }
@@ -221,6 +228,7 @@ export function iniciarPainel() {
     document.querySelectorAll('section').forEach((s) => s.classList.toggle('on', s.id === ok));
     $('nav').querySelectorAll('a').forEach((a) => { if ((a as HTMLElement).dataset.id === ok) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('title').textContent = pages.find((p) => p[0] === ok)![1];
+    $('foot').textContent = '2026 é período parcial.' + (ok === 'reinc' ? ' Reincidência: CNJ acompanha 4 a 5 anos; Recomeçar, até 12 meses.' : '');
     $('per').textContent = I() === null ? 'Todos os anos' : I() === 0 ? 'Até 2020' : Y[I()!] + (I() === ULT ? ' (parcial)' : '');
     cards(); ro.disconnect(); cur = draws[ok] || [];
     document.querySelectorAll('#' + ok + ' .fig').forEach((f) => ro.observe(f)); cur.forEach((f) => f());

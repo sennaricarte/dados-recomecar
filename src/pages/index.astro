@@ -1,157 +1,52 @@
 ---
-import Base from '../layouts/Base.astro';
+import '@fontsource/montserrat/latin-400.css';
+import '@fontsource/montserrat/latin-600.css';
+import '@fontsource/montserrat/latin-700.css';
+import '@fontsource/montserrat/latin-800.css';
+import '../styles/painel.css';
+const raiz = import.meta.env.BASE_URL.replace(/\/$/, '');
+const dados = [['/dados/', 'Levantamento (editar)'], ['/indicadores/', 'Indicadores'], ['/base/', 'Base única'], ['/conciliacao/', 'Conciliação'], ['/parametros/', 'Parâmetros'], ['/sobre/', 'Sobre']];
 ---
-<Base titulo="Painel" ativo="painel">
-  <h1>Painel de indicadores</h1>
-  <p class="sub">Entregas, resultados e impactos do Instituto Recomeçar. Clique em uma barra para filtrar o período; clique na legenda para ocultar séries. Os números podem ser editados em <a href="./dados/">Levantamento</a>.</p>
-
-  <div class="filtros">
-    <label>Período dos cartões <select id="f-periodo"></select></label>
-    <label>Gráficos: de <select id="f-de"></select></label>
-    <label>até <select id="f-ate"></select></label>
-    <label class="chk"><input type="checkbox" id="f-parcial" checked /> Incluir 2026 (parcial)</label>
-  </div>
-
-  <section class="kpis" id="kpis" aria-label="Indicadores principais"></section>
-
-  <section class="grade">
-    <div class="card"><h2>Trilha do egresso por ano</h2><p class="nota">Cadastrados (egressos + reeducandos) → socializados → desenvolvidos (pessoas)</p><div class="chart"><canvas id="g-trilha" role="img" aria-label="Barras agrupadas: cadastrados, socializados e desenvolvidos por ano"></canvas></div></div>
-    <div class="card"><h2>Funil do período selecionado</h2><p class="nota" id="n-funil"></p><div class="chart"><canvas id="g-funil" role="img" aria-label="Funil: cadastrados, socializados, desenvolvidos e geração de renda"></canvas></div></div>
-    <div class="card"><h2>Qualificação profissional</h2><p class="nota">Matrículas e certificados concluídos por ano</p><div class="chart"><canvas id="g-qualif" role="img" aria-label="Matrículas e qualificações concluídas por ano"></canvas></div></div>
-    <div class="card"><h2>Geração de renda por vínculo</h2><p class="nota">CLT, PJ/MEI/cooperado/freelancer e empreendedores (pessoas)</p><div class="chart"><canvas id="g-renda" role="img" aria-label="Barras empilhadas de geração de renda por vínculo"></canvas></div></div>
-    <div class="card"><h2>Taxa de empregabilidade</h2><p class="nota">Geração de renda ÷ egressos desenvolvidos (RES-02)</p><div class="chart"><canvas id="g-taxa" role="img" aria-label="Linha da taxa de empregabilidade por ano"></canvas></div></div>
-    <div class="card"><h2>Outros públicos atendidos</h2><p class="nota">Familiares, jovens em risco e líderes formados (reeducandos contam em Cadastrados)</p><div class="chart"><canvas id="g-outros" role="img" aria-label="Barras empilhadas de outros públicos"></canvas></div></div>
-    <div class="card"><h2>Perfil dos atendidos</h2><p class="nota">% sobre o total de cadastrados no ano</p><div class="chart"><canvas id="g-perfil" role="img" aria-label="Linhas do perfil dos atendidos"></canvas></div></div>
-    <div class="card"><h2>Rede de empresas</h2><p class="nota">Parceiras × que contrataram no ano (retrato anual) × histórico acumulado de contratantes</p><div class="chart"><canvas id="g-empresas" role="img" aria-label="Empresas parceiras e empresas que contrataram por ano"></canvas></div></div>
-    <div class="card larga"><h2>Reincidência: quem volta ao sistema prisional</h2><p class="nota" id="n-reinc" style="font-size:14px;color:var(--ink);max-width:95ch"></p><div class="chart" style="height:190px"><canvas id="g-reinc" role="img" aria-label="Taxa de reincidência: média nacional comparada aos egressos do Recomeçar"></canvas></div></div>
-  </section>
-  <p class="rodape">* 2026 é período parcial; “Até 2020” reúne vários anos, então não é comparável a um ano isolado. Indicadores de impacto (reincidência, economia, ROI) são estimativas e dependem das premissas em <a href="./parametros/">Parâmetros</a>.</p>
-
-  <script>
-    import { Chart, BarController, BarElement, LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
-    import { getDados, getCalc, onChange } from '../lib/store';
-    import { compacto, esc, formatar } from '../lib/format';
-    import { param } from '../lib/calc';
-
-    Chart.register(BarController, BarElement, LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend);
-    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
-    Chart.defaults.color = '#6a686b';
-    Chart.defaults.borderColor = '#ece9e6';
-
-    // Paleta categórica em ordem fixa; a cor segue a entidade, nunca o ranking
-    const COR = { vinho: '#782932', amarelo: '#ffca00', grafite: '#3f3e40', verde: '#00b894' };
-    const ORDINAL = ['#d4a5ac', '#b5707a', '#97424f', '#782932']; // funil: tons de vinho, claro→escuro
-
-    const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
-    const selP = $<HTMLSelectElement>('f-periodo'), selDe = $<HTMLSelectElement>('f-de'), selAte = $<HTMLSelectElement>('f-ate'), chkP = $<HTMLInputElement>('f-parcial');
-    const d0 = getDados();
-    const rot = (a: string) => (a === d0.meta.parcial ? `${a}*` : a);
-    selP.add(new Option('Acumulado (todos os anos)', 'acum'));
-    d0.meta.anos.forEach((a, i) => { selP.add(new Option(rot(a), String(i))); selDe.add(new Option(a, String(i))); selAte.add(new Option(a, String(i))); });
-    selDe.value = '0'; selAte.value = String(d0.meta.anos.length - 1);
-
-    const charts = new Map<string, Chart>();
-    function montar(id: string, cfg: any) {
-      charts.get(id)?.destroy();
-      cfg.options = { responsive: true, maintainAspectRatio: false, animation: { duration: 250 },
-        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, boxHeight: 12, usePointStyle: false } }, ...(cfg.options?.plugins ?? {}) },
-        ...cfg.options };
-      charts.set(id, new Chart($<HTMLCanvasElement>(id), cfg));
-    }
-
-    const linhaStyle = (cor: string) => ({ borderColor: cor, backgroundColor: cor, borderWidth: 2, pointRadius: 4, pointHoverRadius: 6, pointBorderColor: '#fff', pointBorderWidth: 2, tension: 0, spanGaps: false });
-    const barStyle = (cor: string) => ({ backgroundColor: cor, borderColor: '#fff', borderWidth: 1.5, borderRadius: 4, borderSkipped: 'bottom', maxBarThickness: 34 });
-
-    function render() {
-      const d = getDados(), c = getCalc();
-      const ate = Math.min(Number(selAte.value), chkP.checked ? 99 : d.meta.anos.length - 2);
-      const de = Math.min(Number(selDe.value), ate);
-      const idx = d.meta.anos.map((_, i) => i).filter((i) => i >= de && i <= ate);
-      const labels = idx.map((i) => rot(d.meta.anos[i]));
-      const S = (cod: string) => idx.map((i) => c.ind[cod][i]);
-      const L = (id: string) => idx.map((i) => c.lev[id][i]);
-      const un = (cod: string) => d.indicadores.find((m) => m.codigo === cod)!.unidade;
-      const sel = selP.value === 'acum' ? 7 : Number(selP.value);
-
-      // ---- cartões
-      const kp: [string, string][] = [['ENT-14', 'Cadastrados (egressos + reeducandos)'], ['ENT-02', 'Socializados'], ['ENT-03', 'Desenvolvidos'], ['ENT-06', 'Qualificações concluídas'], ['RES-01', 'Geração de renda'], ['RES-02', 'Taxa de empregabilidade'], ['ENT-15', 'Empresas que já empregaram egressos'], ['ENT-10', 'Atendimento individual']];
-      $('kpis').innerHTML = kp.map(([cod, nome]) => {
-        const m = d.indicadores.find((x) => x.codigo === cod)!;
-        const v = c.ind[cod][sel], prev = sel >= 2 && sel <= 6 ? c.ind[cod][sel - 1] : null;
-        let delta = selP.value === 'acum' ? 'todos os anos' : sel === 0 ? 'período anterior a 2021' : '';
-        const parc = d.meta.anos[sel] === d.meta.parcial;
-        if (parc && sel >= 2) delta = 'ano parcial — sem comparação';
-        else if (prev !== null && v !== null && sel >= 2) {
-          const dif = m.unidade === '%' ? (v - prev) * 100 : prev ? ((v - prev) / prev) * 100 : 0;
-          const s = `${dif > 0 ? '+' : ''}${dif.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}${m.unidade === '%' ? ' p.p.' : '%'}`;
-          delta = `<b class="${dif >= 0 ? 'up' : 'down'}">${dif >= 0 ? '▲' : '▼'} ${s}</b> vs ${rot(d.meta.anos[sel - 1])}`;
-        } else if (!delta) delta = sel === 1 ? 'primeiro ano da série' : 'sem ano anterior com dado';
-        const partial = sel === d.meta.anos.indexOf(d.meta.parcial) ? ' (parcial)' : '';
-        return `<div class="card kpi"><div class="rot"><span>${esc(nome)}${partial}</span><span class="ods">ODS ${esc(m.ods)}</span></div><div class="val">${v === null ? '—' : formatar(v, m.unidade)}</div><div class="delta">${delta}</div></div>`;
-      }).join('');
-
-      const porAno = { onClick: (_e: any, els: any[]) => { if (els.length) selP.value = String(idx[els[0].index]); render(); } };
-      const yInt = { beginAtZero: true, ticks: { callback: (v: any) => compacto(Number(v)) }, grid: { color: '#efece9' } };
-      const tip = (u: string) => ({ tooltip: { callbacks: { label: (ctx: any) => ` ${ctx.dataset.label}: ${formatar(ctx.parsed.y ?? ctx.parsed.x, u)}` } } });
-
-      montar('g-trilha', { type: 'bar', data: { labels, datasets: [
-        { label: 'Cadastrados', data: S('ENT-14'), ...barStyle(COR.vinho) }, { label: 'Socializados', data: S('ENT-02'), ...barStyle(COR.amarelo) }, { label: 'Desenvolvidos', data: S('ENT-03'), ...barStyle(COR.grafite) }] },
-        options: { ...porAno, scales: { y: yInt }, plugins: tip('pessoas') } });
-
-      // ---- funil
-      const fun: [string, number | null][] = [['Cadastrados', c.ind['ENT-14'][sel]], ['Socializados', c.ind['ENT-02'][sel]], ['Desenvolvidos', c.ind['ENT-03'][sel]], ['Geração de renda', c.ind['RES-01'][sel]]];
-      $('n-funil').textContent = `${selP.value === 'acum' ? 'Acumulado' : rot(d.meta.anos[sel])} — conversão entre etapas`;
-      montar('g-funil', { type: 'bar', data: { labels: fun.map((f) => f[0]), datasets: [{ label: 'Pessoas', data: fun.map((f) => f[1]), backgroundColor: ORDINAL, borderRadius: 4, borderSkipped: 'start', maxBarThickness: 38 }] },
-        options: { indexAxis: 'y', scales: { x: yInt, y: { grid: { display: false } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx: any) => {
-          const i = ctx.dataIndex, v = fun[i][1], p = i ? fun[i - 1][1] : null;
-          return ` ${formatar(v, 'pessoas')} pessoas${p && v !== null ? ` (${((v / p) * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% da etapa anterior)` : ''}`; } } } } } });
-
-      montar('g-qualif', { type: 'bar', data: { labels, datasets: [{ label: 'Matriculados', data: S('ENT-05'), ...barStyle(COR.vinho) }, { label: 'Concluídas', data: S('ENT-06'), ...barStyle(COR.amarelo) }] },
-        options: { ...porAno, scales: { y: yInt }, plugins: tip('pessoas') } });
-
-      montar('g-renda', { type: 'bar', data: { labels, datasets: [
-        { label: 'CLT', data: L('C01'), ...barStyle(COR.vinho), borderRadius: 0 }, { label: 'PJ/MEI/cooperado', data: L('C02'), ...barStyle(COR.amarelo), borderRadius: 0 }, { label: 'Empreendedores', data: L('C03'), ...barStyle(COR.grafite), borderRadius: 0 }] },
-        options: { ...porAno, scales: { x: { stacked: true }, y: { ...yInt, stacked: true } }, plugins: tip('pessoas') } });
-
-      montar('g-taxa', { type: 'line', data: { labels, datasets: [{ label: 'Taxa de empregabilidade', data: S('RES-02'), ...linhaStyle(COR.vinho) }] },
-        options: { ...porAno, scales: { y: { beginAtZero: true, ticks: { callback: (v: any) => `${Number(v) * 100}%` }, grid: { color: '#efece9' } } }, plugins: { legend: { display: false }, ...tip('%') } } });
-
-      montar('g-outros', { type: 'bar', data: { labels, datasets: [
-        { label: 'Familiares', data: L('A05'), ...barStyle(COR.vinho), borderRadius: 0 }, { label: 'Jovens em risco', data: L('A06'), ...barStyle(COR.amarelo), borderRadius: 0 },
-        { label: 'Líderes formados', data: L('A07'), ...barStyle(COR.grafite), borderRadius: 0 }] },
-        options: { ...porAno, scales: { x: { stacked: true }, y: { ...yInt, stacked: true } }, plugins: tip('pessoas') } });
-
-      montar('g-perfil', { type: 'line', data: { labels, datasets: [
-        { label: 'Homens', data: L('G01'), ...linhaStyle(COR.vinho) }, { label: 'Pretos e pardos', data: L('G02'), ...linhaStyle(COR.amarelo) }, { label: 'Fund. incompleto', data: L('G03'), ...linhaStyle(COR.grafite) }] },
-        options: { ...porAno, scales: { y: { min: 0, max: 1, ticks: { callback: (v: any) => `${Math.round(Number(v) * 100)}%` }, grid: { color: '#efece9' } } }, plugins: tip('%') } });
-
-      montar('g-empresas', { type: 'line', data: { labels, datasets: [{ label: 'Empresas parceiras', data: L('F02'), ...linhaStyle(COR.vinho) }, { label: 'Contrataram no ano', data: L('C06'), ...linhaStyle(COR.amarelo) }, { label: 'Já empregaram (histórico)', data: L('C08'), ...linhaStyle(COR.grafite) }] },
-        options: { ...porAno, scales: { y: yInt }, plugins: tip('nº') } });
-
-      // ---- reincidência: leitura em linguagem simples + duas barras com valor escrito
-      const nac = param(d, 'taxaNacional'), rec = param(d, 'reincidenciaRecomecar'), calc = c.ind['IMP-01'][7];
-      const acomp = c.lev['D01'][7], reinc = c.lev['D02'][7], janela = param(d, 'janelaMeses');
-      const por100 = (v: number) => (v * 100).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-      $('n-reinc').innerHTML = calc !== null && nac !== null
-        ? `<b>De cada 100 egressos acompanhados, ${por100(calc)} voltaram ao sistema prisional</b>, contra ${por100(nac)} na média nacional. ` +
-          `<span class="muted">Base: ${formatar(reinc, 'pessoas')} de ${formatar(acomp, 'pessoas')} egressos acompanhados${janela ? ` por até ${janela} meses após o Desenvolvimento` : ''}. ` +
-          `Os períodos de acompanhamento são diferentes (a taxa nacional cobre 4 a 5 anos), então a comparação é indicativa.` +
-          `${rec !== null && Math.abs(rec - calc) > 0.0005 ? ` A taxa divulgada hoje nos materiais é ${por100(rec)}% — veja a aba Conciliação.` : ''}</span>`
-        : 'Sem dados de acompanhamento suficientes para calcular a reincidência (preencha D01 e D02 no Levantamento).';
-      const barras: [string[], number | null, string][] = [
-        [['Média nacional (CNJ)', 'acompanhamento de 4 a 5 anos'], nac, COR.grafite],
-        [['Egressos do Recomeçar', janela ? `acompanhamento de até ${janela} meses` : 'acompanhados pelo Instituto'], calc, COR.vinho],
-      ];
-      const rotulosNoFim = { id: 'rotulosNoFim', afterDatasetsDraw(chart: any) {
-        const { ctx } = chart; ctx.save(); ctx.font = '600 14px ' + Chart.defaults.font.family; ctx.fillStyle = '#2b2a2c'; ctx.textBaseline = 'middle';
-        chart.getDatasetMeta(0).data.forEach((bar: any, i: number) => { const v = chart.data.datasets[0].data[i]; if (v !== null && v !== undefined) ctx.fillText(`${por100(v)}%`, bar.x + 8, bar.y); });
-        ctx.restore(); } };
-      montar('g-reinc', { type: 'bar', plugins: [rotulosNoFim], data: { labels: barras.map((b) => b[0]), datasets: [{ label: 'Taxa de reincidência', data: barras.map((b) => b[1]), backgroundColor: barras.map((b) => b[2]), borderRadius: 4, borderSkipped: 'start', maxBarThickness: 40 }] },
-        options: { indexAxis: 'y', layout: { padding: { right: 56 } }, scales: { x: { beginAtZero: true, ticks: { callback: (v: any) => `${Number(v) * 100}%` }, grid: { color: '#efece9' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false }, ...tip('%') } } });
-    }
-
-    [selP, selDe, selAte, chkP].forEach((e) => e.addEventListener('input', render));
-    onChange(render);
-    render();
-  </script>
-</Base>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href={raiz + '/favicon.png'} />
+  <title>Painel de indicadores · Instituto Recomeçar</title>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">Instituto Recomeçar<small>Painel de indicadores</small></div>
+    <div><div class="lab">Páginas</div><nav class="pages" id="nav" aria-label="Páginas do painel"></nav></div>
+    <div><div class="lab">Ano</div><div class="slicer" id="seg"></div></div>
+    <div>
+      <div class="lab">Dados</div>
+      <nav class="pages dados" aria-label="Dados e edição">
+        {dados.map(([href, rot]) => <a href={raiz + href}>{rot}</a>)}
+      </nav>
+      <span class="badge" id="badge-edicoes">dados publicados</span>
+    </div>
+  </aside>
+  <main>
+    <div class="top"><h1 id="title"></h1><span class="per" id="per"></span></div>
+    <section id="geral"><div class="cards" id="c-geral"></div><div class="vis"><div class="tile"><h3>Cadastrados e desenvolvidos por ano</h3><div class="leg" id="l1"></div><div class="fig" id="f1"></div></div><div class="tile"><h3>Geração de renda por vínculo</h3><div class="fig" id="f2"></div></div></div></section>
+    <section id="trilha"><div class="cards" id="c-trilha"></div><div class="vis"><div class="tile"><h3>Etapas da trilha por ano</h3><div class="leg" id="l3"></div><div class="fig" id="f3"></div></div><div class="tile"><h3>Funil</h3><div class="fig" id="f4"></div></div></div></section>
+    <section id="qualif"><div class="cards" id="c-qualif"></div><div class="vis one"><div class="tile"><h3>Matrículas e qualificações concluídas por ano</h3><div class="leg" id="l5"></div><div class="fig" id="f5"></div></div></div></section>
+    <section id="emprego"><div class="cards" id="c-emprego"></div><div class="vis eq"><div class="tile"><h3>Geração de renda por vínculo</h3><div class="fig" id="f6"></div></div><div class="tile"><h3>Taxa de empregabilidade por ano</h3><div class="fig" id="f7"></div></div></div></section>
+    <section id="empresas"><div class="cards" id="c-empresas"></div><div class="vis one"><div class="tile"><h3>Empresas parceiras e empresas que contrataram, por ano</h3><div class="leg" id="l8"></div><div class="fig" id="f8"></div></div></div></section>
+    <section id="publico"><div class="cards" id="c-publico"></div><div class="vis one"><div class="tile"><h3>Outros públicos atendidos por ano</h3><div class="leg" id="l9"></div><div class="fig" id="f9"></div></div></div></section>
+    <section id="reinc"><div class="cards" id="c-reinc"></div><div class="vis one"><div class="tile"><h3>Reincidência</h3><div class="fig" id="f10" style="min-height:220px"></div></div></div></section>
+    <p class="foot">2026 é período parcial. Reincidência: CNJ acompanha 4 a 5 anos; Recomeçar, até 12 meses.</p>
+  </main>
+</div>
+<script>
+  import { iniciarBarra } from '../lib/ui';
+  import { iniciarPainel } from '../lib/painel';
+  iniciarBarra();
+  iniciarPainel();
+</script>
+</body>
+</html>

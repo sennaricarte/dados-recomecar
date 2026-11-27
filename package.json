@@ -12,8 +12,8 @@
     "importar": "python3 scripts/xlsx_para_json.py"
   },
   "dependencies": {
-    "astro": "^7.4.13",
-    "chart.js": "^4.6.2"
+    "@fontsource/montserrat": "^5.3.0",
+    "astro": "^7.4.13"
   },
   "devDependencies": {
     "@astrojs/check": "latest",

@@ -20,7 +20,7 @@ import Base from '../layouts/Base.astro';
     <div class="card"><h2>Qualificação profissional</h2><p class="nota">Matrículas e certificados concluídos por ano</p><div class="chart"><canvas id="g-qualif" role="img" aria-label="Matrículas e qualificações concluídas por ano"></canvas></div></div>
     <div class="card"><h2>Geração de renda por vínculo</h2><p class="nota">CLT, PJ/MEI/cooperado/freelancer e empreendedores (pessoas)</p><div class="chart"><canvas id="g-renda" role="img" aria-label="Barras empilhadas de geração de renda por vínculo"></canvas></div></div>
     <div class="card"><h2>Taxa de empregabilidade</h2><p class="nota">Geração de renda ÷ egressos desenvolvidos (RES-02)</p><div class="chart"><canvas id="g-taxa" role="img" aria-label="Linha da taxa de empregabilidade por ano"></canvas></div></div>
-    <div class="card"><h2>Outros públicos atendidos</h2><p class="nota">Reeducandos, familiares, jovens em risco e líderes formados</p><div class="chart"><canvas id="g-outros" role="img" aria-label="Barras empilhadas de outros públicos"></canvas></div></div>
+    <div class="card"><h2>Outros públicos atendidos</h2><p class="nota">Familiares, jovens em risco e líderes formados (reeducandos contam em Cadastrados)</p><div class="chart"><canvas id="g-outros" role="img" aria-label="Barras empilhadas de outros públicos"></canvas></div></div>
     <div class="card"><h2>Perfil dos atendidos</h2><p class="nota">% sobre o total de cadastrados no ano</p><div class="chart"><canvas id="g-perfil" role="img" aria-label="Linhas do perfil dos atendidos"></canvas></div></div>
     <div class="card"><h2>Rede de empresas</h2><p class="nota">Parceiras × que contrataram no ano (retrato anual) × histórico acumulado de contratantes</p><div class="chart"><canvas id="g-empresas" role="img" aria-label="Empresas parceiras e empresas que contrataram por ano"></canvas></div></div>
     <div class="card larga"><h2>Reincidência: quem volta ao sistema prisional</h2><p class="nota" id="n-reinc" style="font-size:14px;color:var(--ink);max-width:95ch"></p><div class="chart" style="height:190px"><canvas id="g-reinc" role="img" aria-label="Taxa de reincidência: média nacional comparada aos egressos do Recomeçar"></canvas></div></div>
@@ -117,8 +117,8 @@ import Base from '../layouts/Base.astro';
         options: { ...porAno, scales: { y: { beginAtZero: true, ticks: { callback: (v: any) => `${Number(v) * 100}%` }, grid: { color: '#efece9' } } }, plugins: { legend: { display: false }, ...tip('%') } } });
 
       montar('g-outros', { type: 'bar', data: { labels, datasets: [
-        { label: 'Reeducandos', data: L('A04'), ...barStyle(COR.vinho), borderRadius: 0 }, { label: 'Familiares', data: L('A05'), ...barStyle(COR.amarelo), borderRadius: 0 },
-        { label: 'Jovens em risco', data: L('A06'), ...barStyle(COR.grafite), borderRadius: 0 }, { label: 'Líderes formados', data: L('A07'), ...barStyle(COR.verde), borderRadius: 0 }] },
+        { label: 'Familiares', data: L('A05'), ...barStyle(COR.vinho), borderRadius: 0 }, { label: 'Jovens em risco', data: L('A06'), ...barStyle(COR.amarelo), borderRadius: 0 },
+        { label: 'Líderes formados', data: L('A07'), ...barStyle(COR.grafite), borderRadius: 0 }] },
         options: { ...porAno, scales: { x: { stacked: true }, y: { ...yInt, stacked: true } }, plugins: tip('pessoas') } });
 
       montar('g-perfil', { type: 'line', data: { labels, datasets: [

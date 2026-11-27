@@ -45,7 +45,7 @@ export function calcular(d: Dados): Calculo {
     set('ENT-01', c, L('A01', c));
     set('ENT-02', c, L('A02', c));
     set('ENT-03', c, L('A03', c));
-    set('ENT-04', c, somaOpc([L('A04', c), L('A05', c), L('A06', c), L('A07', c)]));
+    set('ENT-04', c, somaOpc([L('A05', c), L('A06', c), L('A07', c)]));
     set('ENT-05', c, L('B01', c));
     set('ENT-06', c, L('B02', c));
     set('ENT-07', c, L('B03', c));

@@ -182,7 +182,7 @@
    "responsavel": null,
    "status": "A levantar",
    "definicao": "Pessoas em regime semiaberto/fechado atendidas por ações do Recomeçar.",
-   "obs": null
+   "obs": "Contam em Cadastrados (ENT-14); não entram em \"Outros públicos\" (ENT-04), para evitar dupla contagem."
   },
   {
    "id": "A05",
@@ -990,9 +990,9 @@
    "codigo": "ENT-04",
    "tipo": "Entrega",
    "ods": "4",
-   "nome": "Beneficiados de outros públicos (reeducandos, famílias, jovens, líderes)",
+   "nome": "Beneficiados de outros públicos (familiares, jovens em risco, líderes)",
    "unidade": "pessoas",
-   "como": "A04 + A05 + A06 + A07"
+   "como": "A05 + A06 + A07 (reeducandos ficam só em Cadastrados, ENT-14)"
   },
   {
    "codigo": "ENT-05",

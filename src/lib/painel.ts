@@ -228,7 +228,7 @@ export function iniciarPainel() {
     document.querySelectorAll('section').forEach((s) => s.classList.toggle('on', s.id === ok));
     $('nav').querySelectorAll('a').forEach((a) => { if ((a as HTMLElement).dataset.id === ok) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('title').textContent = pages.find((p) => p[0] === ok)![1];
-    $('foot').textContent = '2026 é período parcial.' + (ok === 'reinc' ? ' Reincidência: CNJ acompanha 4 a 5 anos; Recomeçar, até 12 meses.' : '');
+    $('foot').textContent = '2026 é período parcial.' + (ok === 'reinc' ? ' Reincidência: CNJ acompanha 4 a 5 anos; Recomeçar, até 12 meses.' : '') + (ok === 'perfil' ? ' Em 2026, o ensino médio completo passou a ser o mais comum (' + pc(D.mc[ULT]) + '). Mesmo assim, no sistema prisional o perfil ainda é de fundamental incompleto, então vale ficar de olho.' : '');
     $('per').textContent = I() === null ? 'Todos os anos' : I() === 0 ? 'Até 2020' : Y[I()!] + (I() === ULT ? ' (parcial)' : '');
     cards(); ro.disconnect(); cur = draws[ok] || [];
     document.querySelectorAll('#' + ok + ' .fig').forEach((f) => ro.observe(f)); cur.forEach((f) => f());

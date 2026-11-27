@@ -205,7 +205,7 @@ export function iniciarPainel() {
     const y = I() === null ? Y[ULT] : Y[I()!];
     const emp = razao(val('ren'), val('dev'));
     const nEmp = 'Gerações de renda em relação aos egressos desenvolvidos';
-    $('c-geral').innerHTML = card('Egressos cadastrados', fmt(val('egr')), 'egr') + card('Desenvolvidos', fmt(val('dev')), 'dev') + card('Qualificações concluídas', fmt(val('con')), 'con') + card('Geração de renda', fmt(val('ren')), 'ren') + card('Empregabilidade', emp, null, nEmp);
+    $('c-geral').innerHTML = card('Cadastrados', fmt(val('egr')), 'egr') + card('Desenvolvidos', fmt(val('dev')), 'dev') + card('Qualificações concluídas', fmt(val('con')), 'con') + card('Geração de renda', fmt(val('ren')), 'ren') + card('Empregabilidade', emp, null, nEmp);
     $('c-trilha').innerHTML = card('Egressos cadastrados', fmt(val('egr')), 'egr') + card('Socializados', fmt(val('soc')), 'soc') + card('Desenvolvidos', fmt(val('dev')), 'dev') + card('Conversão cadastro → desenvolvido', razao(val('dev'), val('egr')), null, 'Egressos desenvolvidos ÷ egressos cadastrados');
     $('c-qualif').innerHTML = card('Matriculados', fmt(val('mat')), 'mat') + card('Concluídas', fmt(val('con')), 'con') + card('Taxa de conclusão', razao(val('con'), val('mat')));
     $('c-emprego').innerHTML = card('Geração de renda', fmt(val('ren')), 'ren') + card('CLT', fmt(val('clt')), 'clt') + card('Outros vínculos', fmt(val('out')), 'out') + card('Empregabilidade', emp, null, nEmp);

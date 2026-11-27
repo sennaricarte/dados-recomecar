@@ -14,6 +14,18 @@ function teto(v: number) {
   return m * e;
 }
 
+/** Dica flutuante ao passar o mouse (ou tocar). `tp` fica dentro do .fig. */
+function dica(el: HTMLElement, e: PointerEvent, html: string) {
+  const tp = el.querySelector('.tip') as HTMLElement; if (!tp) return;
+  const r = el.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  tp.innerHTML = html; tp.hidden = false;
+  const w = tp.offsetWidth, h = tp.offsetHeight;
+  tp.style.left = (x + 16 + w > r.width ? Math.max(4, x - 16 - w) : x + 16) + 'px';
+  tp.style.top = Math.max(4, Math.min(y - h / 2, r.height - h - 4)) + 'px';
+}
+const esconder = (el: HTMLElement) => { const t = el.querySelector('.tip') as HTMLElement | null; if (t) t.hidden = true; };
+const linha = (c: string, nome: string, v: string) => `<div class="tr"><i style="background:${c}"></i>${nome}: <b>${v}</b></div>`;
+
 export function iniciarPainel() {
   const $ = (id: string) => document.getElementById(id)!;
   const Y = getDados().meta.anos;
@@ -77,21 +89,34 @@ export function iniciarPainel() {
         s += `<text x="${X(i)}" y="${H - m.b + 17}" text-anchor="middle" font-size="11" font-weight="${I() === i ? 800 : 500}" fill="var(--mut)">${sh ? t.replace('Até ', '≤') : t}${i === ULT ? '*' : ''}</text>`;
         if (o.bars) {
           const n = o.bars.length, bw = o.stack ? gw * 0.55 : Math.min(26, (gw * 0.78) / n); let acc = 0;
-          o.bars.forEach(([a, c]: [number[], string], j: number) => {
+          o.bars.forEach(([a, c]: [number[], string, string], j: number) => {
             const h = ((H - m.t - m.b) * a[i]) / o.max;
             if (o.stack) { acc += h; if (h > 0) s += `<rect x="${X(i) - bw / 2}" y="${H - m.b - acc}" width="${bw}" height="${h}" fill="${c}" opacity="${op}"/>`; }
             else s += `<rect x="${X(i) - (bw * n + 3 * (n - 1)) / 2 + j * (bw + 3)}" y="${H - m.b - h}" width="${bw}" height="${h}" rx="2" fill="${c}" opacity="${op}"/>`;
           });
         }
       });
-      (o.lines || []).forEach(([a, c, soUlt]: [number[], string, boolean?]) => {
+      (o.lines || []).forEach(([a, c, , soUlt]: [number[], string, string, boolean?]) => {
         s += `<polyline fill="none" stroke="${c}" stroke-width="3" points="${a.map((v, i) => X(i) + ',' + Yv(v)).join(' ')}"/>`;
         a.forEach((v, i) => {
           const on = I() === i; s += `<circle cx="${X(i)}" cy="${Yv(v)}" r="${on ? 6 : 4}" fill="${c}"/>`;
           if (on || (I() === null && !sh && o.lab && (!soUlt || i === N - 1))) s += `<text x="${X(i)}" y="${Yv(v) - 10}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">${o.p ? pc(v) : fmt(v)}</text>`;
         });
       });
-      el.innerHTML = `<svg>${s}</svg>`;
+      const band = `<rect class="band" y="${m.t}" height="${H - m.t - m.b}" width="${gw}" fill="var(--ink)" opacity=".07" visibility="hidden"/>`;
+      el.innerHTML = `<svg>${band}${s}</svg><div class="tip" hidden></div>`;
+      const bd = el.querySelector('.band')!, fmtv = (v: number) => (o.p ? pc(v) : fmt(v));
+      const series: [number[], string, string][] = [...(o.bars || []), ...(o.lines || [])];
+      const hide = () => { esconder(el); bd.setAttribute('visibility', 'hidden'); };
+      const move = (e: PointerEvent) => {
+        const x = e.clientX - el.getBoundingClientRect().left, i = Math.floor((x - m.l) / gw);
+        if (i < 0 || i >= N) return hide();
+        bd.setAttribute('x', String(m.l + gw * i)); bd.setAttribute('visibility', 'visible');
+        let h = `<div class="th">${Y[i]}${i === ULT ? ' (parcial)' : ''}</div>` + series.map(([a, c, nm]) => linha(c, nm, fmtv(a[i]))).join('');
+        if (o.stack) h += `<div class="tr tot">Total: <b>${fmt(series.reduce((t, [a]) => t + a[i], 0))}</b></div>`;
+        dica(el, e, h);
+      };
+      el.onpointermove = move; el.onpointerdown = move; el.onpointerleave = hide;
     };
   }
 
@@ -101,18 +126,24 @@ export function iniciarPainel() {
       const parts: [string, number, string][] = [['CLT', val('clt'), WINE], ['PJ/MEI/cooperado/freela', val('pj'), YEL], ['Empreendedores', val('emp'), GRY]], tot = sum(parts.map((p) => p[1]));
       const side = Wd >= 380, r = Math.min(H / 2 - 16, side ? Wd / 4.4 : Wd / 2 - 20), cx = side ? r + 14 : Wd / 2, cy = side ? H / 2 : r + 10, ri = r * 0.6;
       let a0 = -Math.PI / 2, s = '';
-      parts.forEach(([, v, c]) => {
+      parts.forEach(([, v, c], pi) => {
         if (!v) return;
         const a1 = a0 + (2 * Math.PI * v) / tot - 1e-6, lg = a1 - a0 > Math.PI ? 1 : 0, p = (a: number, q: number) => [cx + q * Math.cos(a), cy + q * Math.sin(a)];
         const [x1, y1] = p(a0, r), [x2, y2] = p(a1, r), [x3, y3] = p(a1, ri), [x4, y4] = p(a0, ri);
-        s += `<path d="M${x1} ${y1}A${r} ${r} 0 ${lg} 1 ${x2} ${y2}L${x3} ${y3}A${ri} ${ri} 0 ${lg} 0 ${x4} ${y4}Z" fill="${c}"/>`; a0 = a1 + 1e-6;
+        s += `<path d="M${x1} ${y1}A${r} ${r} 0 ${lg} 1 ${x2} ${y2}L${x3} ${y3}A${ri} ${ri} 0 ${lg} 0 ${x4} ${y4}Z" fill="${c}" data-i="${pi}"/>`; a0 = a1 + 1e-6;
       });
       s += `<text x="${cx}" y="${cy + 8}" text-anchor="middle" font-size="24" font-weight="800" fill="var(--ink)">${fmt(tot)}</text>`;
       let lx = side ? cx + r + 24 : 16, ly = side ? cy - 34 : cy + r + 26;
       parts.forEach(([t, v, c]) => {
         s += `<rect x="${lx}" y="${ly - 10}" width="10" height="10" rx="2" fill="${c}"/><text x="${lx + 16}" y="${ly}" font-size="13" fill="var(--mut)">${t}</text><text x="${lx + 16}" y="${ly + 18}" font-size="15" font-weight="800" fill="var(--ink)">${tot ? pc((100 * v) / tot) : '—'}</text>`; ly += 40;
       });
-      el.innerHTML = `<svg>${s}</svg>`;
+      el.innerHTML = `<svg>${s}</svg><div class="tip" hidden></div>`;
+      const mv = (e: PointerEvent) => {
+        const g = (e.target as Element).closest('[data-i]') as HTMLElement | null; if (!g) return esconder(el);
+        const [t, v, c] = parts[+g.dataset.i!];
+        dica(el, e, `<div class="th">${t}</div>` + linha(c, 'Pessoas', fmt(v)) + `<div class="tr">Participação: <b>${tot ? pc((100 * v) / tot) : '—'}</b></div>`);
+      };
+      el.onpointermove = mv; el.onpointerdown = mv; el.onpointerleave = () => esconder(el);
     };
   }
 
@@ -123,9 +154,15 @@ export function iniciarPainel() {
       const mx = st[0][1] || 1, bh = (H - 20) / st.length - 10; let s = '';
       st.forEach(([t, v, c], j) => {
         const w = Math.max(150, ((Wd - 20) * v) / mx), x = (Wd - w) / 2, y = 10 + j * (bh + 10);
-        s += `<rect x="${x}" y="${y}" width="${w}" height="${bh}" rx="6" fill="${c}"/><text x="${Wd / 2}" y="${y + bh / 2 - 2}" text-anchor="middle" font-size="12" fill="${c === YEL ? '#222' : '#fff'}">${t}</text><text x="${Wd / 2}" y="${y + bh / 2 + 15}" text-anchor="middle" font-size="15" font-weight="800" fill="${c === YEL ? '#222' : '#fff'}">${fmt(v)}</text>`;
+        s += `<rect x="${x}" y="${y}" width="${w}" height="${bh}" rx="6" fill="${c}" data-i="${j}"/><text x="${Wd / 2}" y="${y + bh / 2 - 2}" text-anchor="middle" font-size="12" fill="${c === YEL ? '#222' : '#fff'}">${t}</text><text x="${Wd / 2}" y="${y + bh / 2 + 15}" text-anchor="middle" font-size="15" font-weight="800" fill="${c === YEL ? '#222' : '#fff'}">${fmt(v)}</text>`;
       });
-      el.innerHTML = `<svg>${s}</svg>`;
+      el.innerHTML = `<svg>${s}</svg><div class="tip" hidden></div>`;
+      const mv = (e: PointerEvent) => {
+        const g = (e.target as Element).closest('[data-i]') as HTMLElement | null; if (!g) return esconder(el);
+        const j = +g.dataset.i!, [t, v, c] = st[j], prev = j ? st[j - 1] : null;
+        dica(el, e, `<div class="th">${t}</div>` + linha(c, 'Pessoas', fmt(v)) + (prev ? `<div class="tr">${razao(v, prev[1])} de ${prev[0].toLowerCase()}</div>` : '') + (j > 1 ? `<div class="tr">${razao(v, st[0][1])} de ${st[0][0].toLowerCase()}</div>` : ''));
+      };
+      el.onpointermove = mv; el.onpointerdown = mv; el.onpointerleave = () => esconder(el);
     };
   }
 
@@ -143,18 +180,23 @@ export function iniciarPainel() {
         const v = v0 ?? 0, cx = cw * j + cw / 2, cy = H * 0.72, r = Math.min(cw / 2 - 24, H * 0.6), a = Math.PI * (1 - v / 100), x = cx + r * Math.cos(a), y = cy - r * Math.sin(a);
         s += `<path d="M${cx - r} ${cy}A${r} ${r} 0 0 1 ${cx + r} ${cy}" fill="none" stroke="var(--line)" stroke-width="18" stroke-linecap="round"/><path d="M${cx - r} ${cy}A${r} ${r} 0 0 1 ${x} ${y}" fill="none" stroke="${c}" stroke-width="18" stroke-linecap="round"/><text x="${cx}" y="${cy - 6}" text-anchor="middle" font-size="28" font-weight="800" fill="var(--ink)">${v0 === null ? '—' : pc(v)}</text><text x="${cx}" y="${cy + 26}" text-anchor="middle" font-size="13" fill="var(--mut)">${t}</text>`;
       });
-      el.innerHTML = `<svg>${s}</svg>`;
+      el.innerHTML = `<svg>${s}</svg><div class="tip" hidden></div>`;
+      const mv = (e: PointerEvent) => {
+        const x = e.clientX - el.getBoundingClientRect().left, [t, v0, c] = it[x < cw ? 0 : 1];
+        dica(el, e, `<div class="th">${t}</div>` + linha(c, 'Taxa de reincidência', v0 === null ? '—' : pc(v0)) + (v0 === null ? '' : `<div class="tr">${v0.toFixed(0)} de cada 100 voltam ao sistema prisional</div>`));
+      };
+      el.onpointermove = mv; el.onpointerdown = mv; el.onpointerleave = () => esconder(el);
     };
   }
 
   const mx = (...a: number[][]) => teto(Math.max(...a.flat(), 0));
   const draws: Record<string, (() => void)[]> = {
-    geral: [() => cols($('f1'), { max: mx(D.cad, D.dev), bars: [[D.cad, WINE], [D.dev, YEL]] })(), () => donut($('f2'))()],
-    trilha: [() => cols($('f3'), { max: mx(D.cad, D.soc, D.dev), bars: [[D.cad, WINE], [D.soc, YEL], [D.dev, GRY]] })(), () => funnel($('f4'))()],
-    qualif: [() => cols($('f5'), { max: mx(D.mat, D.con), bars: [[D.mat, WINE], [D.con, YEL]] })()],
-    emprego: [() => donut($('f6'))(), () => { const t = D.ren.map((v, i) => (D.dev[i] ? (100 * v) / D.dev[i] : 0)); cols($('f7'), { max: teto(Math.max(...t, 1) * 1.05), p: 1, lab: 1, lines: [[t, WINE]] })(); }],
-    empresas: [() => cols($('f8'), { max: mx(D.par, D.contr, D.hist), lab: 1, lines: [[D.par, WINE], [D.contr, YEL], [D.hist, GRY, true]] })()],
-    publico: [() => cols($('f9'), { max: teto(Math.max(...D.ree.map((v, i) => v + D.fam[i] + D.lid[i]), 1)), stack: 1, bars: [[D.ree, WINE], [D.fam, YEL], [D.lid, GRY]] })()],
+    geral: [() => cols($('f1'), { max: mx(D.cad, D.dev), bars: [[D.cad, WINE, 'Cadastrados'], [D.dev, YEL, 'Desenvolvidos']] })(), () => donut($('f2'))()],
+    trilha: [() => cols($('f3'), { max: mx(D.cad, D.soc, D.dev), bars: [[D.cad, WINE, 'Cadastrados'], [D.soc, YEL, 'Socializados'], [D.dev, GRY, 'Desenvolvidos']] })(), () => funnel($('f4'))()],
+    qualif: [() => cols($('f5'), { max: mx(D.mat, D.con), bars: [[D.mat, WINE, 'Matriculados'], [D.con, YEL, 'Concluídas']] })()],
+    emprego: [() => donut($('f6'))(), () => { const t = D.ren.map((v, i) => (D.dev[i] ? (100 * v) / D.dev[i] : 0)); cols($('f7'), { max: teto(Math.max(...t, 1) * 1.05), p: 1, lab: 1, lines: [[t, WINE, 'Empregabilidade']] })(); }],
+    empresas: [() => cols($('f8'), { max: mx(D.par, D.contr, D.hist), lab: 1, lines: [[D.par, WINE, 'Empresas parceiras'], [D.contr, YEL, 'Contrataram no ano'], [D.hist, GRY, 'Já empregaram (histórico)', true]] })()],
+    publico: [() => cols($('f9'), { max: teto(Math.max(...D.ree.map((v, i) => v + D.fam[i] + D.lid[i]), 1)), stack: 1, bars: [[D.ree, WINE, 'Reeducandos'], [D.fam, YEL, 'Familiares'], [D.lid, GRY, 'Líderes formados']] })()],
     reinc: [() => gauges($('f10'))()],
   };
 

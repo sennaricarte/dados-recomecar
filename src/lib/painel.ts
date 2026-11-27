@@ -41,7 +41,7 @@ export function iniciarPainel() {
     D = {
       cad: ind['ENT-14'].slice(0, N).map(num), egr: l('A01'), soc: l('A02'), dev: l('A03'), mat: l('B01'), con: l('B02'),
       clt: l('C01'), pj: l('C02'), emp: l('C03'), par: l('F02'), contr: l('C06'), hist: l('C08'),
-      ree: l('A04'), fam: l('A05'), lid: l('A07'), hom: pct('G01'), pp: pct('G02'), fi: pct('G03'),
+      ree: l('A04'), fam: l('A05'), lid: l('A07'), hom: pct('G01'), pp: pct('G02'), fi: pct('G03'), mc: pct('G04'),
     };
     D.ren = D.clt.map((v, i) => v + D.pj[i] + D.emp[i]);
     D.out = D.pj.map((v, i) => v + D.emp[i]);
@@ -66,7 +66,7 @@ export function iniciarPainel() {
   leg('l3', [['Egressos cadastrados', WINE], ['Socializados', YEL], ['Desenvolvidos', GRY]]);
   leg('l5', [['Matriculados', WINE], ['Concluídas', YEL]]);
   leg('l8', [['Empresas com parceria ativa no ano', WINE], ['Empresas que contrataram no ano', YEL], ['Total de empresas que já contrataram', GRY]]);
-  leg('l11', [['Homens', WINE], ['Pretos e pardos', YEL], ['Ensino fundamental incompleto', GRY]]);
+  leg('l11', [['Homens', WINE], ['Pretos e pardos', YEL], ['Ensino fundamental incompleto', GRY], ['Ensino médio completo', '#a5525d']]);
   leg('l9', [['Familiares', WINE], ['Líderes formados', YEL]]);
 
   function dl(k: string) {
@@ -196,7 +196,7 @@ export function iniciarPainel() {
     qualif: [() => cols($('f5'), { max: mx(D.mat, D.con), bars: [[D.mat, WINE, 'Matriculados'], [D.con, YEL, 'Concluídas']] })()],
     emprego: [() => donut($('f6'))(), () => { const t = D.ren.map((v, i) => (D.dev[i] ? (100 * v) / D.dev[i] : 0)); cols($('f7'), { max: Math.max(20, Math.ceil((Math.max(...t, 1) * 1.05) / 20) * 20), p: 1, lab: 1, lines: [[t, WINE, 'Empregabilidade']] })(); }],
     empresas: [() => cols($('f8'), { max: mx(D.par, D.contr, D.hist), lab: 1, lines: [[D.par, WINE, 'Empresas com parceria ativa no ano'], [D.contr, YEL, 'Empresas que contrataram no ano'], [D.hist, GRY, 'Total de empresas que já contrataram', true]] })()],
-    perfil: [() => cols($('f11'), { max: Math.max(20, Math.ceil((Math.max(...D.hom, ...D.pp, ...D.fi, 1) * 1.05) / 20) * 20), p: 1, lab: 1, lines: [[D.hom, WINE, 'Homens', true], [D.pp, YEL, 'Pretos e pardos', true], [D.fi, GRY, 'Ensino fundamental incompleto', true]] })()],
+    perfil: [() => cols($('f11'), { max: Math.max(20, Math.ceil((Math.max(...D.hom, ...D.pp, ...D.fi, ...D.mc, 1) * 1.05) / 20) * 20), p: 1, lab: 1, lines: [[D.hom, WINE, 'Homens', true], [D.pp, YEL, 'Pretos e pardos', true], [D.fi, GRY, 'Ensino fundamental incompleto', true], [D.mc, '#a5525d', 'Ensino médio completo', true]] })()],
     publico: [() => cols($('f9'), { max: teto(Math.max(...D.fam.map((v, i) => v + D.lid[i]), 1)), stack: 1, bars: [[D.fam, WINE, 'Familiares'], [D.lid, YEL, 'Líderes formados']] })()],
     reinc: [() => gauges($('f10'))()],
   };
@@ -214,7 +214,7 @@ export function iniciarPainel() {
       + card('Empresas que contrataram no ano · ' + y, fmt(last('contr')), I() === null ? null : 'contr', 'Pelo menos uma contratação no ano. Não é o total da história.')
       + card('Total de empresas que já contrataram · ' + y, fmt(last('hist')), I() === null ? null : 'hist', 'Desde 2020, cada empresa contada uma única vez.');
     const nPerfil = '% dos egressos cadastrados no ano';
-    $('c-perfil').innerHTML = card('Homens · ' + y, pc(last('hom')), null, nPerfil) + card('Pretos e pardos · ' + y, pc(last('pp')), null, nPerfil) + card('Ensino fundamental incompleto · ' + y, pc(last('fi')), null, nPerfil);
+    $('c-perfil').innerHTML = card('Homens · ' + y, pc(last('hom')), null, nPerfil) + card('Pretos e pardos · ' + y, pc(last('pp')), null, nPerfil) + card('Escolaridade predominante · ' + y, '<span class="vt">' + (last('mc') > last('fi') ? 'Ensino médio completo' : 'Ensino fundamental incompleto') + '</span>', null, pc(Math.max(last('mc'), last('fi'))) + ' dos egressos cadastrados no ano');
     $('c-publico').innerHTML = card('Familiares', fmt(val('fam')), 'fam') + card('Líderes formados', fmt(val('lid')), 'lid');
     const R = reinc();
     $('c-reinc').innerHTML = card('Egressos acompanhados', fmt(R.acomp)) + card('Reincidentes', fmt(R.reinc)) + card('Taxa Recomeçar', R.rec === null ? '—' : pc(R.rec)) + card('Taxa nacional (CNJ)', R.nac === null ? '—' : pc(R.nac));

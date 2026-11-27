@@ -55,3 +55,4 @@ section{display:none}section.on{display:grid;gap:14px}
 .dleg li small{font-size:12px}
 .dleg li span{grid-column:2}
 .dleg li small{grid-column:2}
+.card .v .vt{font-size:clamp(17px,1.6vw,22px);font-weight:800;line-height:1.2;white-space:normal;display:block}

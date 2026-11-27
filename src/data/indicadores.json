@@ -959,6 +959,27 @@
    "status": "A levantar",
    "definicao": "Percentual sobre o total de cadastrados.",
    "obs": null
+  },
+  {
+   "id": "G04",
+   "grupo": "G. Perfil dos atendidos",
+   "dado": "Ensino médio completo",
+   "unidade": "%",
+   "agregacao": "Último valor",
+   "valores": [
+    0.308,
+    0.259,
+    0.253,
+    0.196,
+    0.226,
+    0.301,
+    0.373
+   ],
+   "fonte": null,
+   "responsavel": null,
+   "status": "A levantar",
+   "definicao": "Percentual de egressos cadastrados com ensino médio completo. Informado pela analista de dados.",
+   "obs": null
   }
  ],
  "indicadores": [
